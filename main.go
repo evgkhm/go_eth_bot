@@ -118,8 +118,8 @@ func main() {
 			switch update.CallbackQuery.Data {
 			case "/get_balance":
 				if IsValidAddress(newResp.Address) { //проверка на валидность адреса
-					ChatID := int(update.Message.Chat.ID) //получаем ID пользователя
-					newResp.Address = usersList[ChatID]   //извлечение из мапы адрес эфира
+					ChatID := int(update.CallbackQuery.Message.Chat.ID) //получаем ID пользователя
+					newResp.Address = usersList[ChatID]                 //извлечение из мапы адрес эфира
 					ethBalance := GetBalanceRequest(newResp.Address)
 					str := fmt.Sprint(ethBalance, " ETH")
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
