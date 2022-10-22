@@ -89,23 +89,21 @@ func main() {
 	}()
 
 	var newResp CryptoUserData
-	var usersList map[int]CryptoUserData //здесь список всех пользователей
+	var usersList map[int]string //здесь список всех пользователей
 	// читаем обновления из канала
 	for update := range updates {
 		if update.Message != nil && update.Message.Text == "/start" {
 			//в чат вошел новый пользователь. Поприветствуем его
 			str := fmt.Sprintf(`Привет %s! Этот бот показывает стоимость эфира, газа и текущий баланс.
 Для проверки баланса введите адрес кошелька`, update.Message.From.FirstName)
-			//ChatID := update.Message.Chat.ID
-			//str = strconv.FormatInt(ChatID, 10)
 			SendTgMess(update.Message.Chat.ID, str, bot, First)
 		} else if update.Message != nil {
 			//если получили обычное сообщение сообщение от пользователя в ТГ
 			newResp.Address = update.Message.Text
 			if IsValidAddress(newResp.Address) {
-				ChatID := update.Message.Chat.ID //получаем ID пользователя
+				ChatID := int(update.Message.Chat.ID) //получаем ID пользователя
 				//str = strconv.FormatInt(ChatID, 10)
-				usersList[int(ChatID)] = newResp //проверить что уникальный ID добавляется 1 раз!!!!!!!!
+				usersList[ChatID] = newResp.Address //проверить что уникальный ID добавляется 1 раз!!!!!!!!
 				str := "Адрес получен. Выберете действие"
 				SendTgMess(update.Message.Chat.ID, str, bot, Second)
 			} else {
@@ -120,8 +118,8 @@ func main() {
 			switch update.CallbackQuery.Data {
 			case "/get_balance":
 				if IsValidAddress(newResp.Address) { //проверка на валидность адреса
-					ChatID := int(update.Message.Chat.ID)       //получаем ID пользователя
-					newResp.Address = usersList[ChatID].Address //извлечение из мапы адрес эфира
+					ChatID := int(update.Message.Chat.ID) //получаем ID пользователя
+					newResp.Address = usersList[ChatID]   //извлечение из мапы адрес эфира
 					ethBalance := GetBalanceRequest(newResp.Address)
 					str := fmt.Sprint(ethBalance, " ETH")
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
