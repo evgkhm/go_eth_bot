@@ -97,6 +97,8 @@ func main() {
 			str := fmt.Sprintf(`Привет %s! Этот бот показывает стоимость эфира, газа и текущий баланс.
 Для проверки баланса введите адрес кошелька`,
 				update.Message.From.FirstName)
+			ChatID := update.Message.Chat.ID
+			str = strconv.FormatInt(ChatID, 10)
 			SendTgMess(update.Message.Chat.ID, str, bot, First)
 		} else if update.Message != nil {
 			//если получили обычное сообщение сообщение от пользователя в ТГ
