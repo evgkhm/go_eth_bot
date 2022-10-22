@@ -39,8 +39,8 @@ type CryptoResponseGas struct {
 // firstKeyboard первая клавиатура для отображения в ТГ
 var firstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
-		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
+		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH!", "/get_price"),
+		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas!", "/get_gas"),
 	),
 )
 
