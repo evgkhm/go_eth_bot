@@ -89,7 +89,7 @@ func main() {
 	}()
 
 	var newResp CryptoUserData
-	var usersList map[int64]string //здесь список всех пользователей
+	usersList := make(map[int64]string) //здесь список всех пользователей
 	// читаем обновления из канала
 	for update := range updates {
 		if update.Message != nil && update.Message.Text == "/start" {
