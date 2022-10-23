@@ -89,7 +89,7 @@ func main() {
 	}()
 
 	var newResp CryptoUserData
-	var usersList map[int]string //здесь список всех пользователей
+	var usersList map[int64]string //здесь список всех пользователей
 	// читаем обновления из канала
 	for update := range updates {
 		if update.Message != nil && update.Message.Text == "/start" {
@@ -101,7 +101,7 @@ func main() {
 			//если получили обычное сообщение сообщение от пользователя в ТГ
 			newResp.Address = update.Message.Text
 			if IsValidAddress(newResp.Address) {
-				ChatID := int(update.Message.Chat.ID) //получаем ID пользователя
+				ChatID := update.Message.Chat.ID //получаем ID пользователя
 				//str = strconv.FormatInt(ChatID, 10)
 				usersList[ChatID] = newResp.Address //проверить что уникальный ID добавляется 1 раз!!!!!!!!
 				str := "Адрес получен. Выберете действие"
@@ -118,8 +118,8 @@ func main() {
 			switch update.CallbackQuery.Data {
 			case "/get_balance":
 				if IsValidAddress(newResp.Address) { //проверка на валидность адреса
-					ChatID := int(update.CallbackQuery.Message.Chat.ID) //получаем ID пользователя
-					newResp.Address = usersList[ChatID]                 //извлечение из мапы адрес эфира
+					ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
+					newResp.Address = usersList[ChatID]            //извлечение из мапы адрес эфира
 					ethBalance := GetBalanceRequest(newResp.Address)
 					str := fmt.Sprint(ethBalance, " ETH")
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
