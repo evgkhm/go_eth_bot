@@ -162,6 +162,8 @@ func main() {
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
 				}
 			case "/change_addr":
+				ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
+				delete(usersList, ChatID)                      //удаляем из мапы пользователя
 				newResp.Address = ""
 				fallthrough
 			default:
