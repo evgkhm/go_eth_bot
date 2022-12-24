@@ -193,7 +193,7 @@ func MainHandler(resp http.ResponseWriter, _ *http.Request) {
 // return the value of the key
 func goDotEnvVariable(key string) string {
 	// load .env file
-	err := godotenv.Load("./env")
+	err := godotenv.Load(".env")
 
 	if err != nil {
 		log.Fatalf("Error loading .env file")
