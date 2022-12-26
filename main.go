@@ -5,6 +5,7 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
+	"go_eth_bot/domain/model"
 	"io"
 	"log"
 	"math/big"
@@ -13,28 +14,6 @@ import (
 	"regexp"
 	"strconv"
 )
-
-// CryptoUserData содержит данные о балансе пользователя
-type CryptoUserData struct {
-	Address string //ETH address
-	Result  string `json:"result"`
-}
-
-// CryptoResponsePrice сожержит данные о текущем курсе eth
-type CryptoResponsePrice struct {
-	Result struct {
-		Ethusd string `json:"ethusd"`
-	} `json:"result"`
-}
-
-// CryptoResponseGas содержит данные о текущем газе
-type CryptoResponseGas struct {
-	Result struct {
-		SafeGasPrice    string `json:"SafeGasPrice"`
-		ProposeGasPrice string `json:"ProposeGasPrice"`
-		FastGasPrice    string `json:"FastGasPrice"`
-	} `json:"result"`
-}
 
 // firstKeyboard первая клавиатура для отображения в ТГ
 var firstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
@@ -88,7 +67,7 @@ func main() {
 		}
 	}()
 
-	var newResp CryptoUserData
+	var newResp model.CryptoUserData
 	usersList := make(map[int64]string) //здесь список всех пользователей
 	// читаем обновления из канала
 	for update := range updates {
@@ -223,7 +202,7 @@ func GetGasPrice() (uint32, uint32, uint32) {
 	}(resp.Body)
 
 	//Decode the data
-	var cResp CryptoResponseGas
+	var cResp model.CryptoResponseGas
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
 		log.Fatal("error while decode data from get eth price")
 	}
@@ -291,7 +270,7 @@ func GetEthPrice() *big.Float {
 	}(resp.Body)
 
 	//парсинг данных
-	var cResp CryptoResponsePrice
+	var cResp model.CryptoResponsePrice
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
 		log.Fatal("error while decode data from get eth price")
 	}
@@ -327,7 +306,7 @@ func GetBalanceRequest(address string) *big.Float {
 	}(resp.Body)
 
 	//парсинг данных, из запроса получаем WEI
-	var cResp CryptoUserData
+	var cResp model.CryptoUserData
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
 		log.Fatal("ooopsss! an error occurred, please try again")
 	}
