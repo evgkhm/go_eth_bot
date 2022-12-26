@@ -61,7 +61,7 @@ func main() {
 	//создание сервера, чтобы heroku не ругался на port
 	http.HandleFunc("/", MainHandler)
 	go func() {
-		err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+		err := http.ListenAndServe(":"+goDotEnvVariable("PORT"), nil)
 		if err != nil {
 			log.Panic(err)
 		}
