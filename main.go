@@ -18,8 +18,8 @@ import (
 // firstKeyboard первая клавиатура для отображения в ТГ
 var firstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
-		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
+		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH!!", "/get_price"),
+		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas!!", "/get_gas"),
 	),
 )
 
@@ -59,13 +59,13 @@ func main() {
 	updates := bot.ListenForWebhook("/" + bot.Token)
 
 	//создание сервера, чтобы heroku не ругался на port
-	http.HandleFunc("/", MainHandler)
+	/*http.HandleFunc("/", MainHandler)
 	go func() {
 		err := http.ListenAndServe(":"+goDotEnvVariable("PORT"), nil)
 		if err != nil {
 			log.Panic(err)
 		}
-	}()
+	}()*/
 
 	var newResp model.CryptoUserData
 	usersList := make(map[int64]string) //здесь список всех пользователей
