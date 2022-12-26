@@ -59,13 +59,13 @@ func main() {
 	updates := bot.ListenForWebhook("/" + bot.Token)
 
 	//создание сервера, чтобы heroku не ругался на port
-	/*http.HandleFunc("/", MainHandler)
+	http.HandleFunc("/", MainHandler)
 	go func() {
 		err := http.ListenAndServe(":"+goDotEnvVariable("PORT"), nil)
 		if err != nil {
 			log.Panic(err)
 		}
-	}()*/
+	}()
 
 	var newResp model.CryptoUserData
 	usersList := make(map[int64]string) //здесь список всех пользователей
