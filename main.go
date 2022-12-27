@@ -5,7 +5,8 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
-	"go_eth_bot/domain/model"
+	"go_eth_bot/internal/entity"
+	"go_eth_bot/pkg/telegram"
 	"io"
 	"log"
 	"math/big"
@@ -13,37 +14,6 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-)
-
-// firstKeyboard первая клавиатура для отображения в ТГ
-var firstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH!!", "/get_price"),
-		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas!!", "/get_gas"),
-	),
-)
-
-// secondKeyboard вторая клавиатура для отображения в ТГ
-var secondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("🔷Баланс ETH", "/get_balance"),
-		tgbotapi.NewInlineKeyboardButtonData("💲Баланс в USD", "/get_balance_usd"),
-	),
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
-		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
-	),
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr"),
-	),
-)
-
-// Page для выбора клавиатуры ТГ
-type Page int
-
-const (
-	First Page = iota + 1
-	Second
 )
 
 func main() {
@@ -59,7 +29,7 @@ func main() {
 	updates := bot.ListenForWebhook("/" + bot.Token)
 
 	//создание сервера, чтобы heroku не ругался на port
-	http.HandleFunc("/", MainHandler)
+	http.HandleFunc("/", MainHandler) //закинуть в pkg->httpserver-server.go
 	go func() {
 		err := http.ListenAndServe(":"+goDotEnvVariable("PORT"), nil)
 		if err != nil {
@@ -67,15 +37,16 @@ func main() {
 		}
 	}()
 
-	var newResp model.CryptoUserData
+	var newResp entity.CryptoUserData
 	usersList := make(map[int64]string) //здесь список всех пользователей
+
 	// читаем обновления из канала
 	for update := range updates {
 		if update.Message != nil && update.Message.Text == "/start" {
 			//в чат вошел новый пользователь. Поприветствуем его
 			str := fmt.Sprintf(`Привет %s! Этот бот показывает стоимость эфира, газа и текущий баланс.
 Для проверки баланса введите адрес кошелька`, update.Message.From.FirstName)
-			SendTgMess(update.Message.Chat.ID, str, bot, First)
+			SendTgMess(update.Message.Chat.ID, str, bot, telegram.First)
 		} else if update.Message != nil {
 			//если получили обычное сообщение сообщение от пользователя в ТГ
 			newResp.Address = update.Message.Text
@@ -83,11 +54,11 @@ func main() {
 				ChatID := update.Message.Chat.ID    //получаем ID пользователя
 				usersList[ChatID] = newResp.Address //проверить что уникальный ID добавляется 1 раз!!!!!!!!
 				str := "Адрес получен. Выберете действие"
-				SendTgMess(update.Message.Chat.ID, str, bot, Second)
+				SendTgMess(update.Message.Chat.ID, str, bot, telegram.Second)
 			} else {
 				newResp.Address = ""
 				str := "Введите ETH адрес"
-				SendTgMess(update.Message.Chat.ID, str, bot, First)
+				SendTgMess(update.Message.Chat.ID, str, bot, telegram.First)
 			}
 		}
 
@@ -100,11 +71,11 @@ func main() {
 					newResp.Address = usersList[ChatID]            //извлечение из мапы адрес эфира
 					ethBalance := GetBalanceRequest(newResp.Address)
 					str := fmt.Sprint(ethBalance, " ETH")
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
 				} else {
 					newResp.Address = ""
 					str := "Некорректный адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, First)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
 				}
 			case "/get_balance_usd":
 				if IsValidAddress(newResp.Address) { //проверка на валидность
@@ -114,11 +85,11 @@ func main() {
 					ethPrice := GetEthPrice()
 					usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
 					str := fmt.Sprintf("%.2f USD", usdBalance)
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
 				} else {
 					newResp.Address = ""
 					str := "Некорректный адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, First)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
 				}
 			case "/get_price":
 				ethPrice := GetEthPrice()
@@ -126,9 +97,9 @@ func main() {
 
 				//Если адреса нет вызов первой клавиатуры
 				if newResp.Address == "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, First)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
 				} else {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
 				}
 			case "/get_gas":
 				lowGas, averageGas, highGas := GetGasPrice()
@@ -136,9 +107,9 @@ func main() {
 
 				//Если адреса нет вызов первой клавиатуры
 				if newResp.Address == "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, First)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
 				} else {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
 				}
 			case "/change_addr":
 				ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
@@ -149,11 +120,11 @@ func main() {
 				newResp.Address = update.CallbackQuery.Message.Text
 				if IsValidAddress(newResp.Address) {
 					str := "Адрес получен. Выберете действие"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, Second)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
 				} else {
 					newResp.Address = ""
 					str := "Введите ETH адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, First)
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
 				}
 			}
 		}
@@ -202,7 +173,7 @@ func GetGasPrice() (uint32, uint32, uint32) {
 	}(resp.Body)
 
 	//Decode the data
-	var cResp model.CryptoResponseGas
+	var cResp entity.CryptoResponseGas
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
 		log.Fatal("error while decode data from get eth price")
 	}
@@ -225,15 +196,15 @@ func GetGasPrice() (uint32, uint32, uint32) {
 }
 
 // SendTgMess функция отправки сообщения в ТГ
-func SendTgMess(id int64, str string, bot *tgbotapi.BotAPI, page Page) {
+func SendTgMess(id int64, str string, bot *tgbotapi.BotAPI, page telegram.Page) {
 	msg := tgbotapi.NewMessage(id, str)
 
 	//Определение клавиатуры
 	switch page {
-	case First:
-		msg.ReplyMarkup = firstKeyboard
-	case Second:
-		msg.ReplyMarkup = secondKeyboard
+	case telegram.First:
+		msg.ReplyMarkup = telegram.FirstKeyboard
+	case telegram.Second:
+		msg.ReplyMarkup = telegram.SecondKeyboard
 	}
 
 	//Отправка сообщения в ТГ
@@ -270,7 +241,7 @@ func GetEthPrice() *big.Float {
 	}(resp.Body)
 
 	//парсинг данных
-	var cResp model.CryptoResponsePrice
+	var cResp entity.CryptoResponsePrice
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
 		log.Fatal("error while decode data from get eth price")
 	}
@@ -306,7 +277,7 @@ func GetBalanceRequest(address string) *big.Float {
 	}(resp.Body)
 
 	//парсинг данных, из запроса получаем WEI
-	var cResp model.CryptoUserData
+	var cResp entity.CryptoUserData
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
 		log.Fatal("ooopsss! an error occurred, please try again")
 	}
