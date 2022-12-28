@@ -1,6 +1,9 @@
 package telegram
 
-import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"log"
+)
 
 // Page для выбора клавиатуры ТГ
 type Page int
@@ -10,7 +13,11 @@ const (
 	Second
 )
 
-// firstKeyboard первая клавиатура для отображения в ТГ
+type Updates struct {
+	updates tgbotapi.UpdatesChannel
+}
+
+// FirstKeyboard firstKeyboard первая клавиатура для отображения в ТГ
 var FirstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
@@ -18,7 +25,7 @@ var FirstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
-// secondKeyboard вторая клавиатура для отображения в ТГ
+// SecondKeyboard secondKeyboard вторая клавиатура для отображения в ТГ
 var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("🔷Баланс ETH", "/get_balance"),
@@ -32,3 +39,18 @@ var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr"),
 	),
 )
+
+func New(tgApiKey string) *Updates {
+	upd := &Updates{}
+	// подключаемся к телеграм боту с помощью токена
+	bot, err := tgbotapi.NewBotAPI(tgApiKey)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	bot.Debug = false
+
+	upd.updates = bot.ListenForWebhook("/" + bot.Token)
+
+	return upd
+}

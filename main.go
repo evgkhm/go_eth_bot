@@ -2,154 +2,41 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/joho/godotenv"
+	"go_eth_bot/config"
+	"go_eth_bot/internal/controller"
 	"go_eth_bot/internal/entity"
+	"go_eth_bot/internal/usecase"
+	"go_eth_bot/pkg/server"
 	"go_eth_bot/pkg/telegram"
 	"io"
 	"log"
 	"math/big"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 )
 
 func main() {
-	dotenv := goDotEnvVariable("TG_API_KEY")
-	// подключаемся к телеграм боту с помощью токена
-	bot, err := tgbotapi.NewBotAPI(dotenv)
-	if err != nil {
-		log.Panic(err)
+	cfg, errConfig := config.NewConfig()
+	if errConfig != nil {
+		errors.New("can't get config")
 	}
 
-	bot.Debug = false
-
-	updates := bot.ListenForWebhook("/" + bot.Token)
-
-	//создание сервера, чтобы heroku не ругался на port
-	http.HandleFunc("/", MainHandler) //закинуть в pkg->httpserver-server.go
-	go func() {
-		err := http.ListenAndServe(":"+goDotEnvVariable("PORT"), nil)
-		if err != nil {
-			log.Panic(err)
-		}
-	}()
-
-	var newResp entity.CryptoUserData
-	usersList := make(map[int64]string) //здесь список всех пользователей
-
-	// читаем обновления из канала
-	for update := range updates {
-		if update.Message != nil && update.Message.Text == "/start" {
-			//в чат вошел новый пользователь. Поприветствуем его
-			str := fmt.Sprintf(`Привет %s! Этот бот показывает стоимость эфира, газа и текущий баланс.
-Для проверки баланса введите адрес кошелька`, update.Message.From.FirstName)
-			SendTgMess(update.Message.Chat.ID, str, bot, telegram.First)
-		} else if update.Message != nil {
-			//если получили обычное сообщение сообщение от пользователя в ТГ
-			newResp.Address = update.Message.Text
-			if IsValidAddress(newResp.Address) {
-				ChatID := update.Message.Chat.ID    //получаем ID пользователя
-				usersList[ChatID] = newResp.Address //проверить что уникальный ID добавляется 1 раз!!!!!!!!
-				str := "Адрес получен. Выберете действие"
-				SendTgMess(update.Message.Chat.ID, str, bot, telegram.Second)
-			} else {
-				newResp.Address = ""
-				str := "Введите ETH адрес"
-				SendTgMess(update.Message.Chat.ID, str, bot, telegram.First)
-			}
-		}
-
-		//если получили нажатие кнопки
-		if update.CallbackQuery != nil {
-			switch update.CallbackQuery.Data {
-			case "/get_balance":
-				if IsValidAddress(newResp.Address) { //проверка на валидность адреса
-					ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
-					newResp.Address = usersList[ChatID]            //извлечение из мапы адрес эфира
-					ethBalance := GetBalanceRequest(newResp.Address)
-					str := fmt.Sprint(ethBalance, " ETH")
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
-				} else {
-					newResp.Address = ""
-					str := "Некорректный адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
-				}
-			case "/get_balance_usd":
-				if IsValidAddress(newResp.Address) { //проверка на валидность
-					ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
-					newResp.Address = usersList[ChatID]            //извлечение из мапы адрес эфира
-					ethBalance := GetBalanceRequest(newResp.Address)
-					ethPrice := GetEthPrice()
-					usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
-					str := fmt.Sprintf("%.2f USD", usdBalance)
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
-				} else {
-					newResp.Address = ""
-					str := "Некорректный адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
-				}
-			case "/get_price":
-				ethPrice := GetEthPrice()
-				str := fmt.Sprint(ethPrice, " USD")
-
-				//Если адреса нет вызов первой клавиатуры
-				if newResp.Address == "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
-				} else {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
-				}
-			case "/get_gas":
-				lowGas, averageGas, highGas := GetGasPrice()
-				str := fmt.Sprintf("Low %d gwei \nAverage %d gwei \nHigh %d gwei", lowGas, averageGas, highGas)
-
-				//Если адреса нет вызов первой клавиатуры
-				if newResp.Address == "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
-				} else {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
-				}
-			case "/change_addr":
-				ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
-				delete(usersList, ChatID)                      //удаляем из мапы пользователя
-				newResp.Address = ""
-				fallthrough
-			default:
-				newResp.Address = update.CallbackQuery.Message.Text
-				if IsValidAddress(newResp.Address) {
-					str := "Адрес получен. Выберете действие"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.Second)
-				} else {
-					newResp.Address = ""
-					str := "Введите ETH адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, bot, telegram.First)
-				}
-			}
-		}
-	}
-}
-
-// MainHandler функция приветствия для правильной работы с heroku
-func MainHandler(resp http.ResponseWriter, _ *http.Request) {
-	_, err := resp.Write([]byte("Hi there! I'm Bot!"))
-	if err != nil {
-		log.Panic(err)
-	}
-}
-
-// use godot package to load/read the .env file and
-// return the value of the key
-func goDotEnvVariable(key string) string {
-	// load .env file
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
+	serverErr := server.New(cfg.Port)
+	if serverErr != nil {
+		errors.New("can't create server")
 	}
 
-	return os.Getenv(key)
+	updates := telegram.New(cfg.TgApiKey)
+
+	service := usecase.New(updates)
+
+	//var newResp entity.CryptoUserData
+	//usersList := make(map[int64]string) //здесь список всех пользователей
+
+	controller.ReadUpdates(updates)
 }
 
 // GetGasPrice функция получения текущего газа сети eth
