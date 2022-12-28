@@ -35,8 +35,10 @@ func main() {
 
 	//var newResp entity.CryptoUserData
 	//usersList := make(map[int64]string) //здесь список всех пользователей
+	handlers := controller.New(service)
 
-	controller.ReadUpdates(updates)
+	handlers.Run(service)
+	//controller.ReadUpdates(service)
 }
 
 // GetGasPrice функция получения текущего газа сети eth
