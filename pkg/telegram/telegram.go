@@ -36,8 +36,9 @@ func (u Updates) Run(cfg *config.Config) {
 			var newResp entity.CryptoUserData
 			newResp.Address = update.Message.Text
 			if IsValidAddress(newResp.Address) {
-				ChatID := update.Message.Chat.ID    //получаем ID пользователя
-				usersList[ChatID] = newResp.Address //проверить что уникальный ID добавляется 1 раз!!!!!!!!
+				//получаем ID пользователя
+				ChatID := update.Message.Chat.ID
+				usersList[ChatID] = newResp.Address
 				str := "Адрес получен. Выберете действие"
 				SendTgMess(update.Message.Chat.ID, str, u.bot, Second)
 			} else {
@@ -64,24 +65,14 @@ func (u Updates) Run(cfg *config.Config) {
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
 				}
 
-				//_, ok := usersList[ChatID]
-				//if ok {
-				//	var newResp entity.CryptoUserData
-				//	newResp.Address = usersList[ChatID] //извлечение из мапы адрес эфира
-				//	ethBalance := GetBalanceRequest(cfg, newResp.Address)
-				//	str := fmt.Sprint(ethBalance, " ETH")
-				//	SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, Second)
-				//} else {
-				//	str := "Некорректный адрес"
-				//	SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
-				//}
-
 			case "/get_balance_usd":
-				ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
-				_, ok := usersList[ChatID]
-				if ok {
-					var newResp entity.CryptoUserData
-					newResp.Address = usersList[ChatID] //извлечение из мапы адрес эфира
+				//получаем ID пользователя
+				ChatID := update.CallbackQuery.Message.Chat.ID
+				//узнаем есть ли у этого ID адрес эфира в мапе
+				var newResp entity.CryptoUserData
+				var IsExistAddr bool
+				newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+				if IsExistAddr {
 					ethBalance := GetBalanceRequest(cfg, newResp.Address)
 					ethPrice := GetEthPrice(cfg)
 					usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
@@ -93,44 +84,57 @@ func (u Updates) Run(cfg *config.Config) {
 				}
 
 			case "/get_price":
+				//получаем цену эфириума
 				ethPrice := GetEthPrice(cfg)
 				str := fmt.Sprint(ethPrice, " USD")
 
+				//получаем ID пользователя
+				ChatID := update.CallbackQuery.Message.Chat.ID
+				//узнаем есть ли у этого ID адрес эфира в мапе
 				var newResp entity.CryptoUserData
-				//Если адреса нет вызов первой клавиатуры
-				if newResp.Address == "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
-				} else {
+				var IsExistAddr bool
+				newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+				if IsExistAddr {
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, Second)
+				} else { //Если адреса нет вызов первой клавиатуры
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
 				}
+
 			case "/get_gas":
 				lowGas, averageGas, highGas := GetGasPrice(cfg)
 				str := fmt.Sprintf("Low %d gwei \nAverage %d gwei \nHigh %d gwei", lowGas, averageGas, highGas)
 
+				//получаем ID пользователя
+				ChatID := update.CallbackQuery.Message.Chat.ID
+				//узнаем есть ли у этого ID адрес эфира в мапе
 				var newResp entity.CryptoUserData
-				//Если адреса нет вызов первой клавиатуры
-				if newResp.Address == "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
-				} else {
+				var IsExistAddr bool
+				newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+				if IsExistAddr {
 					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, Second)
+				} else { //Если адреса нет вызов первой клавиатуры
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
 				}
+
 			case "/change_addr":
-				ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
-				delete(usersList, ChatID)                      //удаляем из мапы пользователя
-				var newResp entity.CryptoUserData              //?????????????????????????????????
-				newResp.Address = ""
-				fallthrough
-			default:
-				var newResp entity.CryptoUserData
-				newResp.Address = update.CallbackQuery.Message.Text
-				if IsValidAddress(newResp.Address) {
-					str := "Адрес получен. Выберете действие"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, Second)
-				} else {
-					newResp.Address = ""
-					str := "Введите ETH адрес"
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
-				}
+				//получаем ID пользователя
+				ChatID := update.CallbackQuery.Message.Chat.ID
+				//удаляем из мапы пользователя
+				delete(usersList, ChatID)
+				str := "Введите ETH адрес"
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
+
+				//default:
+				//	var newResp entity.CryptoUserData
+				//	newResp.Address = update.CallbackQuery.Message.Text
+				//	if IsValidAddress(newResp.Address) {
+				//		str := "Адрес получен. Выберете действие"
+				//		SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, Second)
+				//	} else {
+				//		newResp.Address = ""
+				//		str := "Введите ETH адрес"
+				//		SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
+				//	}
 			}
 		}
 	}
