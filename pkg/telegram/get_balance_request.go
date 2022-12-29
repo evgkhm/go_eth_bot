@@ -17,14 +17,14 @@ func GetBalanceRequest(cfg *config.Config, address string) *big.Float {
 
 	rawAddress := "&address=" + address
 
-	resp, err := http.Get("https://api.etherscan.io/api" +
+	resp, httpGetErr := http.Get("https://api.etherscan.io/api" +
 		"?module=account" +
 		"&action=balance" +
 		rawAddress +
 		"&tag=latest" +
 		"&apikey=" + dotenv)
-	if err != nil {
-		log.Fatalln(err)
+	if httpGetErr != nil {
+		log.Fatalln(httpGetErr)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -36,7 +36,7 @@ func GetBalanceRequest(cfg *config.Config, address string) *big.Float {
 
 	//парсинг данных, из запроса получаем WEI
 	var cResp entity.CryptoUserData
-	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
+	if decodeJsonErr := json.NewDecoder(resp.Body).Decode(&cResp); decodeJsonErr != nil {
 		log.Fatal("ooopsss! an error occurred, please try again")
 	}
 	wei := new(big.Float)

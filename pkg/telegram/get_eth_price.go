@@ -15,12 +15,12 @@ func GetEthPrice(cfg *config.Config) *big.Float {
 	// godotenv package
 	dotenv := cfg.EthScanApiKey
 
-	resp, err := http.Get("https://api.etherscan.io/api" +
+	resp, httpGetErr := http.Get("https://api.etherscan.io/api" +
 		"?module=stats" +
 		"&action=ethprice" +
 		"&apikey=" + dotenv)
-	if err != nil {
-		log.Fatalln(err)
+	if httpGetErr != nil {
+		log.Fatalln(httpGetErr)
 	}
 
 	defer func(Body io.ReadCloser) {

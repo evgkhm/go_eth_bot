@@ -17,7 +17,15 @@ func New() (*Config, error) {
 	cfg := &Config{}
 	var err error
 	cfg.TgApiKey, err = goDotEnvVariable("TG_API_KEY")
+	if err != nil {
+		return nil, err
+	}
+
 	cfg.EthScanApiKey, err = goDotEnvVariable("API_KEY")
+	if err != nil {
+		return nil, err
+	}
+
 	cfg.Port, err = goDotEnvVariable("PORT")
 	if err != nil {
 		return nil, err

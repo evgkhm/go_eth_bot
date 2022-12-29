@@ -11,16 +11,7 @@ func IsValidAddress(v string) bool {
 	return re.MatchString(v)
 }
 
-//func IsHasAddressFromMap(usersList map[int64]string, chatID int64) bool {
-//	_, ok := usersList[chatID]
-//	if ok {
-//
-//
-//		return true
-//	}
-//	return false
-//}
-
+// GetAddFromMap извлечение из map файла эфир адреса
 func GetAddFromMap(usersList map[int64]string, chatID int64) (string, bool) {
 	var newResp entity.CryptoUserData
 

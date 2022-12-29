@@ -15,12 +15,12 @@ func GetGasPrice(cfg *config.Config) (uint32, uint32, uint32) {
 	// godotenv package
 	dotenv := cfg.EthScanApiKey
 
-	resp, err := http.Get("https://api.etherscan.io/api" +
+	resp, httpGetErr := http.Get("https://api.etherscan.io/api" +
 		"?module=gastracker" +
 		"&action=gasoracle" +
 		"&apikey=" + dotenv)
-	if err != nil {
-		log.Fatalln(err)
+	if httpGetErr != nil {
+		log.Fatalln(httpGetErr)
 	}
 
 	defer func(Body io.ReadCloser) {

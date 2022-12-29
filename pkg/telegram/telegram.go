@@ -124,17 +124,6 @@ func (u Updates) Run(cfg *config.Config) {
 				str := "Введите ETH адрес"
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
 
-				//default:
-				//	var newResp entity.CryptoUserData
-				//	newResp.Address = update.CallbackQuery.Message.Text
-				//	if IsValidAddress(newResp.Address) {
-				//		str := "Адрес получен. Выберете действие"
-				//		SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, Second)
-				//	} else {
-				//		newResp.Address = ""
-				//		str := "Введите ETH адрес"
-				//		SendTgMess(update.CallbackQuery.Message.Chat.ID, str, u.bot, First)
-				//	}
 			}
 		}
 	}
