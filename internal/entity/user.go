@@ -1,4 +1,4 @@
-package model
+package entity
 
 // CryptoUserData содержит данные о балансе пользователя
 type CryptoUserData struct {
