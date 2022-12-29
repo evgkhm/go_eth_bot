@@ -8,7 +8,7 @@ import (
 // New создание сервера заглушки
 func New(port string) error {
 	var err error
-	http.HandleFunc("/", MainHandler) //закинуть в pkg->server-server.go
+	http.HandleFunc("/", MainHandler)
 	go func() {
 		err = http.ListenAndServe(":"+port, nil)
 		if err != nil {

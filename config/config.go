@@ -10,7 +10,7 @@ type Config struct {
 	Port          string `env-required:"true" env:"PORT"`
 }
 
-func NewConfig() (*Config, error) {
+func New() (*Config, error) {
 	cfg := &Config{}
 
 	//cfg.tgApiKey = goDotEnvVariable("TG_API_KEY")
