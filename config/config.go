@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"github.com/joho/godotenv"
+	"log"
 	"os"
 )
 
@@ -30,7 +31,7 @@ func goDotEnvVariable(key string) (string, error) {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		errors.New("error loading .env file")
+		log.Fatal(errors.New("error loading .env file"))
 		return "", err
 	}
 
