@@ -123,7 +123,7 @@ func (u Updates) Run(cfg *config.Config) {
 }
 
 func New(cfg *config.Config) *Updates {
-	upd := &Updates{}
+	u := &Updates{}
 	// подключаемся к телеграм боту с помощью токена
 	bot, err := tgbotapi.NewBotAPI(cfg.TgApiKey)
 	if err != nil {
@@ -132,7 +132,8 @@ func New(cfg *config.Config) *Updates {
 
 	bot.Debug = false
 
-	upd.updates = bot.ListenForWebhook("/" + bot.Token)
+	u.bot = bot
+	u.updates = bot.ListenForWebhook("/" + bot.Token)
 
-	return upd
+	return u
 }
