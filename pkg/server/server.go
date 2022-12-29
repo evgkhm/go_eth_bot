@@ -2,15 +2,20 @@ package server
 
 import (
 	"errors"
+	"go_eth_bot/config"
 	"net/http"
 )
 
+type Server struct {
+	server http.Server
+}
+
 // New создание сервера заглушки
-func New(port string) error {
+func New(cfg *config.Config) error {
 	var err error
 	http.HandleFunc("/", MainHandler)
 	go func() {
-		err = http.ListenAndServe(":"+port, nil)
+		err = http.ListenAndServe(":"+cfg.Port, nil)
 		if err != nil {
 			errors.New("can't create server")
 		}

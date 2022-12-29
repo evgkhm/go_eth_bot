@@ -13,12 +13,12 @@ func main() {
 		errors.New("can't get config")
 	}
 
-	serverErr := server.New(cfg.Port)
+	serverErr := server.New(cfg)
 	if serverErr != nil {
 		errors.New("can't create server")
 	}
 
-	handlers := telegram.New(cfg.TgApiKey)
+	handlers := telegram.New(cfg)
 
 	handlers.Run(cfg)
 }

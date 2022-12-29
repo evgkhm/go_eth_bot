@@ -122,10 +122,10 @@ func (u Updates) Run(cfg *config.Config) {
 	}
 }
 
-func New(tgApiKey string) *Updates {
+func New(cfg *config.Config) *Updates {
 	upd := &Updates{}
 	// подключаемся к телеграм боту с помощью токена
-	bot, err := tgbotapi.NewBotAPI(tgApiKey)
+	bot, err := tgbotapi.NewBotAPI(cfg.TgApiKey)
 	if err != nil {
 		log.Panic(err)
 	}
