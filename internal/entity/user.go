@@ -21,3 +21,7 @@ type CryptoResponseGas struct {
 		FastGasPrice    string `json:"FastGasPrice"`
 	} `json:"result"`
 }
+
+type CryptoResponseBTC struct {
+	Price string `json:"price"`
+}
