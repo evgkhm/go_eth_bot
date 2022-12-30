@@ -44,7 +44,6 @@ func (u Updates) Run(cfg *config.Config) {
 
 			case "/get_gas":
 				GetEthGas(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
-				GetBTCPrice(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
 
 			case "/change_addr":
 				ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList, u.bot)

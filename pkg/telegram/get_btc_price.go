@@ -10,18 +10,32 @@ import (
 	"log"
 	"math/big"
 	"net/http"
+	"net/url"
 )
 
 // GetBTCPriceRequest функция получения текущего курса eth
 func GetBTCPriceRequest(cfg *config.Config) *big.Float {
+	client := &http.Client{}
+
+	//resp, httpGetErr := http.Get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&convert=USD&limit=1")
+
+	req, reqErr := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
+	if reqErr != nil {
+		log.Print(reqErr)
+	}
+	q := url.Values{}
+	q.Add("start", "1")
+	q.Add("limit", "1")
+	q.Add("convert", "USD")
+
+	req.Header.Set("Accept", "application/json")
 	// godotenv package
 	dotenv := cfg.CoinMarketCapApiKey
+	req.Header.Add("X-CMC_PRO_API_KEY", dotenv)
 
-	resp, httpGetErr := http.Get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&convert=USD&limit=1")
+	req.URL.RawQuery = q.Encode()
 
-	resp.Header.Set("Accept", "application/json")
-	resp.Header.Add("X-CMC_PRO_API_KEY", dotenv)
-
+	resp, httpGetErr := client.Do(req)
 	if httpGetErr != nil {
 		log.Fatalln(httpGetErr)
 	}
