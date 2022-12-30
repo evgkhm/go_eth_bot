@@ -40,7 +40,7 @@ func GetBTCPriceRequest(cfg *config.Config) *big.Float {
 	//парсинг данных
 	var cResp entity.CryptoResponseBTC
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
-		log.Fatal("error while decode data from get eth price")
+		log.Fatal("error while decode data from get btc price")
 	}
 
 	btcPrice := new(big.Float)
