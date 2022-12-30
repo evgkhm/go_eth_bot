@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	TgApiKey      string `env:"TG_API_KEY"`
-	EthScanApiKey string `env:"API_KEY"`
-	Port          string `env:"PORT"`
+	TgApiKey            string `env:"TG_API_KEY"`
+	EthScanApiKey       string `env:"API_KEY"`
+	Port                string `env:"PORT"`
+	CoinMarketCapApiKey string `env:"CMC_API_KEY"`
 }
 
 func New() (*Config, error) {
@@ -27,6 +28,11 @@ func New() (*Config, error) {
 	}
 
 	cfg.Port, err = goDotEnvVariable("PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.CoinMarketCapApiKey, err = goDotEnvVariable("CMC_API_KEY")
 	if err != nil {
 		return nil, err
 	}
