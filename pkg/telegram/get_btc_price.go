@@ -6,7 +6,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
-	"io"
 	"log"
 	"math/big"
 	"net/http"
@@ -27,25 +26,16 @@ func GetBTCPriceRequest(cfg *config.Config) *big.Float {
 	q.Add("start", "1")
 	q.Add("limit", "1")
 	q.Add("convert", "USD")
-
 	req.Header.Set("Accept", "application/json")
 	// godotenv package
 	dotenv := cfg.CoinMarketCapApiKey
 	req.Header.Add("X-CMC_PRO_API_KEY", dotenv)
-
 	req.URL.RawQuery = q.Encode()
-
 	resp, httpGetErr := client.Do(req)
 	if httpGetErr != nil {
 		log.Fatalln(httpGetErr)
 	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}(resp.Body)
+	defer resp.Body.Close()
 
 	//парсинг данных
 	var cResp entity.CryptoResponseBTC
