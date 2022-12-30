@@ -3,7 +3,6 @@ package telegram
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
-	"go_eth_bot/pkg/telegram/btc"
 	"log"
 )
 
@@ -50,7 +49,7 @@ func (u Updates) Run(cfg *config.Config) {
 				ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList, u.bot)
 
 			case "/get_btc_price":
-				btc.GetBTCPrice(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
+				GetBTCPrice(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
 			}
 		}
 	}

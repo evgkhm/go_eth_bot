@@ -1,4 +1,4 @@
-package btc
+package telegram
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
-	"go_eth_bot/pkg/telegram"
 	"io"
 	"log"
 	"math/big"
@@ -65,5 +64,5 @@ func GetBTCPrice(ChatID int64, usersListBTC map[int64]string, cfg *config.Config
 	//} else { //Если адреса нет вызов первой клавиатуры
 	//	SendTgMess(ChatID, str, bot, First)
 	//}
-	telegram.SendTgMess(ChatID, str, bot, telegram.First)
+	SendTgMess(ChatID, str, bot, First)
 }
