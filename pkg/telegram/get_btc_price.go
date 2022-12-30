@@ -17,10 +17,7 @@ func GetBTCPriceRequest(cfg *config.Config) *big.Float {
 	// godotenv package
 	dotenv := cfg.CoinMarketCapApiKey
 
-	resp, httpGetErr := http.Get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest" +
-		"?start=1" +
-		"&convert=USD" +
-		"&limit=1")
+	resp, httpGetErr := http.Get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&convert=USD&limit=1")
 
 	resp.Header.Set("Accept", "application/json")
 	resp.Header.Add("X-CMC_PRO_API_KEY", dotenv)
@@ -43,13 +40,13 @@ func GetBTCPriceRequest(cfg *config.Config) *big.Float {
 	}
 
 	btcPrice := new(big.Float)
-	btcPrice.SetString(cResp.Data.Quote.Price)
+	btcPrice.SetString(cResp.Data.Quote.USD.Price)
 
 	return btcPrice
 }
 
 func GetBTCPrice(ChatID int64, usersListBTC map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
-	//получаем цену эфириума
+	//получаем цену
 	btcPrice := GetBTCPriceRequest(cfg)
 	str := fmt.Sprint(btcPrice, " USD")
 

@@ -25,7 +25,9 @@ type CryptoResponseGas struct {
 type CryptoResponseBTC struct {
 	Data struct {
 		Quote struct {
-			Price string `json:"price"`
+			USD struct {
+				Price string `json:"price"`
+			} `json:"USD"`
 		} `json:"quote"`
 	} `json:"data"`
 }
