@@ -24,9 +24,9 @@ func (u Updates) Run(cfg *config.Config) {
 
 	for update := range u.updates {
 		if update.Message != nil && update.Message.Text == "/start" {
-			Greeting(update.CallbackQuery.Message.Chat.ID, update.Message.From.FirstName, u.bot)
+			Greeting(update.Message.Chat.ID, update.Message.From.FirstName, u.bot)
 		} else if update.Message != nil {
-			PutAddToMap(update.CallbackQuery.Message.Chat.ID, usersList, update.Message.Text, u.bot)
+			PutAddToMap(update.Message.Chat.ID, usersList, update.Message.Text, u.bot)
 		}
 
 		//если получили нажатие кнопки
