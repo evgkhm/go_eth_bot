@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/tidwall/gjson"
 	"go_eth_bot/config"
@@ -67,8 +66,8 @@ func removeExtn(input string) string {
 func GetBTCPrice(ChatID int64, usersListBTC map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
 	//получаем цену
 	btcPrice := GetBTCPriceRequest(cfg)
-	str := fmt.Sprint(btcPrice, " USD")
-
+	//str := fmt.Sprint(btcPrice, " USD")
+	str := btcPrice + " USD"
 	//получаем ID пользователя
 	//ChatID := update.CallbackQuery.Message.Chat.ID
 	//узнаем есть ли у этого ID адрес эфира в мапе

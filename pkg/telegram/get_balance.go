@@ -60,6 +60,7 @@ func GetBalance(ChatID int64, usersList map[int64]string, cfg *config.Config, bo
 	if IsExistAddr {
 		ethBalance := GetBalanceRequest(cfg, newResp.Address)
 		str := fmt.Sprint(ethBalance, " ETH")
+		//str := ethBalance + " ETH"
 		SendTgMess(ChatID, str, bot, Second)
 	} else {
 		str := "Некорректный адрес"
@@ -77,7 +78,7 @@ func GetBalanceUSD(ChatID int64, usersList map[int64]string, cfg *config.Config,
 		ethBalance := GetBalanceRequest(cfg, newResp.Address)
 		ethPrice := GetEthPriceRequest(cfg)
 		usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
-		str := fmt.Sprintf("%.2f USD", usdBalance)
+		str := fmt.Sprintf("%d USD", usdBalance)
 		SendTgMess(ChatID, str, bot, Second)
 	} else {
 		str := "Некорректный адрес"
