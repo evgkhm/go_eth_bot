@@ -78,7 +78,7 @@ func GetBalanceUSD(ChatID int64, usersList map[int64]string, cfg *config.Config,
 		ethBalance := GetBalanceRequest(cfg, newResp.Address)
 		ethPrice := GetEthPriceRequest(cfg)
 		usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
-		str := fmt.Sprintf("%d USD", usdBalance)
+		str := fmt.Sprintf("%.0f USD", usdBalance)
 		SendTgMess(ChatID, str, bot, Second)
 	} else {
 		str := "Некорректный адрес"

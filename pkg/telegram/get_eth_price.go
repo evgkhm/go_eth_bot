@@ -47,7 +47,8 @@ func GetEthPriceRequest(cfg *config.Config) *big.Float {
 func GetEthPrice(ChatID int64, usersList map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
 	//получаем цену эфириума
 	ethPrice := GetEthPriceRequest(cfg)
-	str := fmt.Sprint(ethPrice, " USD")
+	//str := fmt.Sprint(ethPrice, " USD")
+	str := fmt.Sprintf("%.0f USD", ethPrice)
 
 	//получаем ID пользователя
 	//ChatID := update.CallbackQuery.Message.Chat.ID
