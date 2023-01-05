@@ -1,19 +1,19 @@
 package telegram
 
 import (
-	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/tidwall/gjson"
 	"go_eth_bot/config"
-	"go_eth_bot/internal/entity"
+	"io"
 	"log"
-	"math/big"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // GetBTCPriceRequest функция получения текущего курса eth
-func GetBTCPriceRequest(cfg *config.Config) *big.Float {
+func GetBTCPriceRequest(cfg *config.Config) string {
 	client := &http.Client{}
 
 	//resp, httpGetErr := http.Get("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&convert=USD&limit=1")
@@ -38,15 +38,30 @@ func GetBTCPriceRequest(cfg *config.Config) *big.Float {
 	defer resp.Body.Close()
 
 	//парсинг данных
-	var cResp entity.CryptoResponseBTC
-	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
-		log.Fatal("error while decode data from get btc price")
-	}
+	//var cResp entity.CryptoResponseBTC
+	//	//if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
+	//	//	log.Fatal("error while decode data from get btc price")
+	//	//}
+	//	//
+	//	//btcPrice := new(big.Float)
+	//	//btcPrice.SetString(cResp.Data.Quote.USD.Price)
 
-	btcPrice := new(big.Float)
-	btcPrice.SetString(cResp.Data.Quote.USD.Price)
+	respBody, _ := io.ReadAll(resp.Body)
+
+	value := gjson.Get(string(respBody), "data.#.quote.USD.price|0").String()
+	btcPrice := removeExtn(value)
 
 	return btcPrice
+}
+
+// removeExtn удаление символов после точки
+func removeExtn(input string) string {
+	if len(input) > 0 {
+		if i := strings.LastIndex(input, "."); i > 0 {
+			input = input[:i]
+		}
+	}
+	return input
 }
 
 func GetBTCPrice(ChatID int64, usersListBTC map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
