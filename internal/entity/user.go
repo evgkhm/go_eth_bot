@@ -21,3 +21,13 @@ type CryptoResponseGas struct {
 		FastGasPrice    string `json:"FastGasPrice"`
 	} `json:"result"`
 }
+
+type CryptoResponseBTC struct {
+	Data struct {
+		Quote struct {
+			USD struct {
+				Price string `json:"price"`
+			} `json:"USD"`
+		} `json:"quote"`
+	} `json:"data"`
+}

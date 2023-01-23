@@ -8,6 +8,9 @@ var FirstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
 		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
 	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
+	),
 )
 
 // SecondKeyboard secondKeyboard вторая клавиатура для отображения в ТГ

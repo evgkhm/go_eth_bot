@@ -2,6 +2,8 @@ package telegram
 
 import (
 	"encoding/json"
+	"fmt"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
 	"io"
@@ -11,7 +13,7 @@ import (
 )
 
 // GetEthPrice функция получения текущего курса eth
-func GetEthPrice(cfg *config.Config) *big.Float {
+func GetEthPriceRequest(cfg *config.Config) *big.Float {
 	// godotenv package
 	dotenv := cfg.EthScanApiKey
 
@@ -40,4 +42,23 @@ func GetEthPrice(cfg *config.Config) *big.Float {
 	ethPrice.SetString(cResp.Result.Ethusd)
 
 	return ethPrice
+}
+
+func GetEthPrice(ChatID int64, usersList map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
+	//получаем цену эфириума
+	ethPrice := GetEthPriceRequest(cfg)
+	//str := fmt.Sprint(ethPrice, " USD")
+	str := fmt.Sprintf("%.0f USD", ethPrice)
+
+	//получаем ID пользователя
+	//ChatID := update.CallbackQuery.Message.Chat.ID
+	//узнаем есть ли у этого ID адрес эфира в мапе
+	var newResp entity.CryptoUserData
+	var IsExistAddr bool
+	newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+	if IsExistAddr {
+		SendTgMess(ChatID, str, bot, Second)
+	} else { //Если адреса нет вызов первой клавиатуры
+		SendTgMess(ChatID, str, bot, First)
+	}
 }

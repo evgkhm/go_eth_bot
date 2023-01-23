@@ -2,6 +2,8 @@ package telegram
 
 import (
 	"encoding/json"
+	"fmt"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
 	"io"
@@ -11,7 +13,7 @@ import (
 )
 
 // GetGasPrice функция получения текущего газа сети eth
-func GetGasPrice(cfg *config.Config) (uint32, uint32, uint32) {
+func GetEthGasRequest(cfg *config.Config) (uint32, uint32, uint32) {
 	// godotenv package
 	dotenv := cfg.EthScanApiKey
 
@@ -51,4 +53,21 @@ func GetGasPrice(cfg *config.Config) (uint32, uint32, uint32) {
 	}
 
 	return uint32(safeGasPrice), uint32(proposeGasPrice), uint32(fastGasPrice)
+}
+
+func GetEthGas(ChatID int64, usersList map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
+	lowGas, averageGas, highGas := GetEthGasRequest(cfg)
+	str := fmt.Sprintf("Low %d gwei \nAverage %d gwei \nHigh %d gwei", lowGas, averageGas, highGas)
+
+	//получаем ID пользователя
+	//ChatID := update.CallbackQuery.Message.Chat.ID
+	//узнаем есть ли у этого ID адрес эфира в мапе
+	var newResp entity.CryptoUserData
+	var IsExistAddr bool
+	newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+	if IsExistAddr {
+		SendTgMess(ChatID, str, bot, Second)
+	} else { //Если адреса нет вызов первой клавиатуры
+		SendTgMess(ChatID, str, bot, First)
+	}
 }
