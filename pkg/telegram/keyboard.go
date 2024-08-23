@@ -24,6 +24,9 @@ var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr"),
 	),
 )
