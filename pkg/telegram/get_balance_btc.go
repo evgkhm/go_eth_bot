@@ -82,16 +82,16 @@ func GetBTCBalance(ChatID int64, usersList map[int64]string, cfg *config.Config,
 		btcBalance := GetBTCBalanceRequest(newResp.Address)
 
 		// Получаем цену BTC в USD через CoinMarketCap
-		btcPrice := GetBTCPriceRequest(cfg)
+		//btcPrice := GetBTCPriceRequest(cfg)
 
-		btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		//btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
+		//if err != nil {
+		//	log.Fatalln(err)
+		//}
 
 		// Рассчитываем баланс в USD
-		usdBalance := new(big.Float).Mul(btcBalance, big.NewFloat(btcPriceFloat))
-		str := fmt.Sprintf("%.2f USD", usdBalance)
+		//usdBalance := new(big.Float).Mul(btcBalance, big.NewFloat(btcPriceFloat))
+		str := fmt.Sprint(btcBalance, " BTC")
 
 		SendTgMess(ChatID, str, bot, Second)
 	} else {
