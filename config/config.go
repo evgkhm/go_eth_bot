@@ -17,25 +17,26 @@ type Config struct {
 func New() (*Config, error) {
 	cfg := &Config{}
 	var err error
-	cfg.TgApiKey, err = goDotEnvVariable("TG_API_KEY")
-	if err != nil {
+	cfg.TgApiKey = os.Getenv("TG_API_KEY")
+	if cfg.TgApiKey == "" {
 		return nil, err
 	}
 
-	cfg.EthScanApiKey, err = goDotEnvVariable("API_KEY")
-	if err != nil {
+	cfg.EthScanApiKey = os.Getenv("API_KEY")
+	if cfg.EthScanApiKey == "" {
 		return nil, err
 	}
 
-	cfg.Port, err = goDotEnvVariable("PORT")
-	if err != nil {
+	cfg.Port = os.Getenv("PORT")
+	if cfg.Port == "" {
 		return nil, err
 	}
 
-	cfg.CoinMarketCapApiKey, err = goDotEnvVariable("CMC_API_KEY")
-	if err != nil {
+	cfg.CoinMarketCapApiKey = os.Getenv("CMC_API_KEY")
+	if cfg.CoinMarketCapApiKey == "" {
 		return nil, err
 	}
+
 	return cfg, nil
 }
 
