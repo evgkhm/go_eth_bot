@@ -1,4 +1,4 @@
-package telegram
+package eth
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
+	telegram2 "go_eth_bot/internal/telegram"
 	"io"
 	"log"
 	"net/http"
@@ -64,10 +65,10 @@ func GetEthGas(ChatID int64, usersList map[int64]string, cfg *config.Config, bot
 	//узнаем есть ли у этого ID адрес эфира в мапе
 	var newResp entity.CryptoUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+	newResp.Address, IsExistAddr = telegram2.GetAddFromMap(usersList, ChatID)
 	if IsExistAddr {
-		SendTgMess(ChatID, str, bot, Second)
+		telegram2.SendTgMess(ChatID, str, bot, telegram2.Second)
 	} else { //Если адреса нет вызов первой клавиатуры
-		SendTgMess(ChatID, str, bot, First)
+		telegram2.SendTgMess(ChatID, str, bot, telegram2.First)
 	}
 }

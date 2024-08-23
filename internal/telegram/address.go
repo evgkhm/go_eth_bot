@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// IsValidAddress функция проверки валидности eth адреса
-func IsValidAddress(v string) bool {
+// IsValidEtAddress функция проверки валидности eth адреса
+func IsValidEtAddress(v string) bool {
 	re := regexp.MustCompile("^0x[\\da-fA-F]{40}$")
 	return re.MatchString(v)
 }
@@ -25,23 +25,10 @@ func IsValidBitcoinAddress(address string) bool {
 	return reBase58.MatchString(address) || reBech32.MatchString(address)
 }
 
-// GetAddFromMap извлечение из map файла эфир адреса
-func GetAddFromMap(usersList map[int64]string, chatID int64) (string, bool) {
-	var newResp entity.CryptoUserData
-
-	_, ok := usersList[chatID]
-	if ok {
-		newResp.Address = usersList[chatID] //извлечение из мапы адрес эфира
-
-		return newResp.Address, true
-	}
-	return "", false
-}
-
 func PutAddToMap(ChatID int64, usersList map[int64]string, usersListBTC map[int64]string, text string, bot *tgbotapi.BotAPI) {
 	var newResp entity.CryptoUserData
 	newResp.Address = text
-	if IsValidAddress(newResp.Address) {
+	if IsValidEtAddress(newResp.Address) {
 		usersList[ChatID] = newResp.Address
 		str := "ETH адрес получен. Выберете действие"
 		SendTgMess(ChatID, str, bot, Second)
@@ -51,7 +38,7 @@ func PutAddToMap(ChatID int64, usersList map[int64]string, usersListBTC map[int6
 		SendTgMess(ChatID, str, bot, Second)
 	} else {
 		newResp.Address = ""
-		str := "Введите ETH адрес"
+		str := "Введите адрес"
 		SendTgMess(ChatID, str, bot, First)
 	}
 }

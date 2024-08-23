@@ -3,6 +3,8 @@ package telegram
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
+	btc2 "go_eth_bot/internal/service/btc"
+	eth2 "go_eth_bot/internal/service/eth"
 	"log"
 )
 
@@ -34,28 +36,38 @@ func (u Updates) Run(cfg *config.Config) {
 		if update.CallbackQuery != nil {
 			switch update.CallbackQuery.Data {
 			case "/get_balance":
-				GetBalance(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				eth2.GetBalance(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
 
 			case "/get_balance_usd":
-				GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				eth2.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
 
 			case "/get_price":
-				GetEthPrice(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				eth2.GetEthPrice(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
 
 			case "/get_gas":
-				GetEthGas(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				eth2.GetEthGas(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
 
 			case "/change_addr":
 				ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList, u.bot)
 
 			case "/get_btc_price":
-				GetBTCPrice(update.CallbackQuery.Message.Chat.ID, cfg, u.bot)
+				resp := btc2.GetBTCPrice(cfg)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, First)
 
 			case "/get_balance_btc":
-				GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
-
+				resp := btc2.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
+				if resp != "" {
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, Second)
+				} else {
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, "Некорректный адрес", u.bot, First)
+				}
 			case "/get_balance_btc_usd":
-				GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
+				resp := btc2.GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg)
+				if resp != "" {
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, Second)
+				} else {
+					SendTgMess(update.CallbackQuery.Message.Chat.ID, "Некорректный адрес", u.bot, First)
+				}
 			}
 		}
 	}

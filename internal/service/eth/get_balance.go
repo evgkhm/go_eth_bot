@@ -1,4 +1,4 @@
-package telegram
+package eth
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
+	telegram2 "go_eth_bot/internal/telegram"
 	"io"
 	"log"
 	"math/big"
@@ -56,15 +57,15 @@ func GetBalance(ChatID int64, usersList map[int64]string, cfg *config.Config, bo
 	//ChatID := update.CallbackQuery.Message.Chat.ID //получаем ID пользователя
 	var newResp entity.CryptoUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+	newResp.Address, IsExistAddr = telegram2.GetAddFromMap(usersList, ChatID)
 	if IsExistAddr {
 		ethBalance := GetBalanceRequest(cfg, newResp.Address)
 		str := fmt.Sprint(ethBalance, " ETH")
 		//str := ethBalance + " ETH"
-		SendTgMess(ChatID, str, bot, Second)
+		telegram2.SendTgMess(ChatID, str, bot, telegram2.Second)
 	} else {
 		str := "Некорректный адрес"
-		SendTgMess(ChatID, str, bot, First)
+		telegram2.SendTgMess(ChatID, str, bot, telegram2.First)
 	}
 }
 
@@ -73,15 +74,15 @@ func GetBalanceUSD(ChatID int64, usersList map[int64]string, cfg *config.Config,
 	//узнаем есть ли у этого ID адрес эфира в мапе
 	var newResp entity.CryptoUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = GetAddFromMap(usersList, ChatID)
+	newResp.Address, IsExistAddr = telegram2.GetAddFromMap(usersList, ChatID)
 	if IsExistAddr {
 		ethBalance := GetBalanceRequest(cfg, newResp.Address)
 		ethPrice := GetEthPriceRequest(cfg)
 		usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
 		str := fmt.Sprintf("%.0f USD", usdBalance)
-		SendTgMess(ChatID, str, bot, Second)
+		telegram2.SendTgMess(ChatID, str, bot, telegram2.Second)
 	} else {
 		str := "Некорректный адрес"
-		SendTgMess(ChatID, str, bot, First)
+		telegram2.SendTgMess(ChatID, str, bot, telegram2.First)
 	}
 }

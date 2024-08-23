@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"go_eth_bot/config"
-	"go_eth_bot/pkg/server"
-	"go_eth_bot/pkg/telegram"
+	"go_eth_bot/internal/server"
+	"go_eth_bot/internal/telegram"
 	"log"
 )
 
