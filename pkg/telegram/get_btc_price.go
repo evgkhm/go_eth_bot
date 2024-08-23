@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// GetBTCPriceRequest функция получения текущего курса eth
+// GetBTCPriceRequest функция получения текущего курса btc
 func GetBTCPriceRequest(cfg *config.Config) string {
 	client := &http.Client{}
 
