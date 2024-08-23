@@ -6,7 +6,7 @@ import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 var FirstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
-		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
+		//tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
@@ -21,9 +21,6 @@ var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена ETH", "/get_price"),
-		tgbotapi.NewInlineKeyboardButtonData("⛽Цена Gas", "/get_gas"),
-	),
-	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
