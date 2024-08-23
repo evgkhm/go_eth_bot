@@ -16,25 +16,24 @@ type Config struct {
 
 func New() (*Config, error) {
 	cfg := &Config{}
-	var err error
 	cfg.TgApiKey = os.Getenv("TG_API_KEY")
 	if cfg.TgApiKey == "" {
-		return nil, err
+		panic("TG_API_KEY is empty")
 	}
 
 	cfg.EthScanApiKey = os.Getenv("API_KEY")
 	if cfg.EthScanApiKey == "" {
-		return nil, err
+		panic("API_KEY is empty")
 	}
 
 	cfg.Port = os.Getenv("PORT")
 	if cfg.Port == "" {
-		return nil, err
+		panic("PORT is empty")
 	}
 
 	cfg.CoinMarketCapApiKey = os.Getenv("CMC_API_KEY")
 	if cfg.CoinMarketCapApiKey == "" {
-		return nil, err
+		panic("CMC_API_KEY is empty")
 	}
 
 	return cfg, nil
