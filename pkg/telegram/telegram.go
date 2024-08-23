@@ -26,7 +26,7 @@ func (u Updates) Run(cfg *config.Config) {
 		if update.Message != nil && update.Message.Text == "/start" {
 			Greeting(update.Message.Chat.ID, update.Message.From.FirstName, u.bot)
 		} else if update.Message != nil {
-			PutAddToMap(update.Message.Chat.ID, usersList, update.Message.Text, u.bot)
+			PutAddToMap(update.Message.Chat.ID, usersList, usersListBTC, update.Message.Text, u.bot)
 			//PutAddToMapBTC(update.Message.Chat.ID, usersListBTC, update.Message.Text, u.bot)
 		}
 
@@ -49,7 +49,13 @@ func (u Updates) Run(cfg *config.Config) {
 				ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList, u.bot)
 
 			case "/get_btc_price":
-				GetBTCPrice(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
+				GetBTCPrice(update.CallbackQuery.Message.Chat.ID, cfg, u.bot)
+
+			case "/get_balance_btc":
+				GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
+
+			case "/get_balance_btc_usd":
+				GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg, u.bot)
 			}
 		}
 	}

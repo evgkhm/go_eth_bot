@@ -63,7 +63,7 @@ func removeExtn(input string) string {
 	return input
 }
 
-func GetBTCPrice(ChatID int64, usersListBTC map[int64]string, cfg *config.Config, bot *tgbotapi.BotAPI) {
+func GetBTCPrice(ChatID int64, cfg *config.Config, bot *tgbotapi.BotAPI) {
 	//получаем цену
 	btcPrice := GetBTCPriceRequest(cfg)
 	//str := fmt.Sprint(btcPrice, " USD")
