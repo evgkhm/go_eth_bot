@@ -1,6 +1,6 @@
 module go_eth_bot
 
-go 1.18
+go 1.21.0
 
 require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
