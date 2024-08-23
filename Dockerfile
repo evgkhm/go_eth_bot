@@ -1,22 +1,23 @@
-# Build stage
-FROM golang:1.21.0-alpine AS builder
+# Start from the latest golang base image
+FROM golang:latest
 
-WORKDIR /build
+# Add Maintainer Info
+LABEL maintainer="Evgenii evgkhm@mail.ru"
 
-COPY go.mod go.sum ./
-RUN go mod download
+# Set the Current Working Directory inside the container
+WORKDIR /
 
+# Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/app ./main.go
+# Disable Go Modules
+ENV GO111MODULE=off
 
-# Final stage
-FROM alpine:latest
+# Build the Go app
+RUN go build -o main .
 
-WORKDIR /app
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
-#COPY --from=builder /build/migrations ./migrations
-COPY --from=builder /build/bin/app .
-#COPY --from=builder /build/.env .
-
-CMD ["./app"]
+# Command to run the executable
+CMD ["./main"]
