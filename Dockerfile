@@ -10,8 +10,8 @@ WORKDIR /
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Disable Go Modules
-ENV GO111MODULE=off
+# Enable Go Modules
+ENV GO111MODULE=on
 
 # Build the Go app
 RUN go build -o main .
