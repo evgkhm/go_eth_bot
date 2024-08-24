@@ -16,7 +16,7 @@ func getBTCPriceRequest(cfg *config.Config) string {
 
 	req, reqErr := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if reqErr != nil {
-		log.Print(reqErr)
+		log.Println(reqErr)
 	}
 	q := url.Values{}
 	q.Add("start", "1")
@@ -29,7 +29,7 @@ func getBTCPriceRequest(cfg *config.Config) string {
 	req.URL.RawQuery = q.Encode()
 	resp, httpGetErr := client.Do(req)
 	if httpGetErr != nil {
-		log.Fatalln(httpGetErr)
+		log.Println(httpGetErr)
 	}
 	defer resp.Body.Close()
 
