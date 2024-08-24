@@ -24,20 +24,20 @@ type Updates struct {
 }
 
 func (u Updates) Run(cfg *config.Config) {
-	usersList := make(map[int64]string)    //здесь список всех пользователей
+	usersListETH := make(map[int64]string) //здесь список всех пользователей
 	usersListBTC := make(map[int64]string) //здесь список всех пользователей BTC
 	for update := range u.updates {
 		if update.Message != nil && update.Message.Text == "/start" {
 			Greeting(update.Message.Chat.ID, update.Message.From.FirstName, u.bot)
 		} else if update.Message != nil {
-			PutAddToMap(update.Message.Chat.ID, usersList, usersListBTC, update.Message.Text, u.bot)
+			PutAddToMap(update.Message.Chat.ID, usersListETH, usersListBTC, update.Message.Text, u.bot)
 		}
 
 		//если получили нажатие кнопки
 		if update.CallbackQuery != nil {
 			var keyboard Page
-			currEthBalance := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersList, cfg)
-			currEthUSDTBalance := eth.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersList, cfg)
+			currEthBalance := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
+			currEthUSDTBalance := eth.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
 			currBtcBalance := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
 			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg)
 
@@ -62,10 +62,6 @@ func (u Updates) Run(cfg *config.Config) {
 				currPrice := eth.GetEthPrice(cfg)
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, currPrice, u.bot, keyboard)
 
-			case "/change_addr":
-				resp := ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList)
-				SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, First)
-
 			case "/get_btc_price":
 				currPrice := btc.GetBTCPrice(cfg)
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, currPrice, u.bot, keyboard)
@@ -75,6 +71,14 @@ func (u Updates) Run(cfg *config.Config) {
 
 			case "/get_balance_btc_usd":
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcUSDTBalance, u.bot, keyboard)
+
+			case "/change_addr_eth":
+				resp := ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersListETH)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, First)
+
+			case "/change_addr_btc":
+				resp := ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersListBTC)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, First)
 			}
 		}
 	}

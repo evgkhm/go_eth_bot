@@ -43,7 +43,7 @@ func PutAddToMap(ChatID int64, usersList map[int64]string, usersListBTC map[int6
 	}
 }
 
-func ChangeAddress(ChatID int64, usersList map[int64]string) string {
-	delete(usersList, ChatID)
+func ChangeAddress(chatID int64, usersList map[int64]string) string {
+	delete(usersList, chatID)
 	return "Введите ETH или BTC адрес"
 }

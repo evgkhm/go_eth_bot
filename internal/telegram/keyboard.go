@@ -26,8 +26,8 @@ var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr"),
-		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес BTC", "/change_addr"),
+		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr_eth"),
+		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес BTC", "/change_addr_btc"),
 	),
 )
 
@@ -42,8 +42,8 @@ var ThirdKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr"),
-		tgbotapi.NewInlineKeyboardButtonData("🔙Добавить адрес BTC", "/change_addr"),
+		tgbotapi.NewInlineKeyboardButtonData("🔙Другой адрес ETH", "/change_addr_eth"),
+		tgbotapi.NewInlineKeyboardButtonData("🔙Добавить адрес BTC", "/change_addr_btc"),
 	),
 )
 
@@ -58,7 +58,7 @@ var FourthKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("📊Цена BTC", "/get_btc_price"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("🔙Добавить адрес ETH", "/change_addr"),
-		tgbotapi.NewInlineKeyboardButtonData("🔙Изменить адрес BTC", "/change_addr"),
+		tgbotapi.NewInlineKeyboardButtonData("🔙Добавить адрес ETH", "/change_addr_eth"),
+		tgbotapi.NewInlineKeyboardButtonData("🔙Изменить адрес BTC", "/change_addr_btc"),
 	),
 )
