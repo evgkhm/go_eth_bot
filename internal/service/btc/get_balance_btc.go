@@ -39,10 +39,10 @@ func getBTCBalanceRequest(address string) *big.Float {
 	return btcBalance
 }
 
-func GetBTCBalance(chatID int64, usersList map[int64]string) string {
+func GetBTCBalance(ChatID int64, usersList map[int64]string) string {
 	var newResp entity.BTCUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
+	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, ChatID)
 	if IsExistAddr {
 		// Получаем баланс биткоин-адреса
 		btcBalance := getBTCBalanceRequest(newResp.Address)
@@ -53,16 +53,16 @@ func GetBTCBalance(chatID int64, usersList map[int64]string) string {
 	return ""
 }
 
-func GetBTCBalanceInUSD(chatID int64, usersList map[int64]string, cfg *config.Config) string {
+func GetBTCBalanceInUSD(ChatID int64, usersList map[int64]string, cfg *config.Config) string {
 	var newResp entity.BTCUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
+	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, ChatID)
 	if IsExistAddr {
 		// Получаем баланс биткоин-адреса
 		btcBalance := getBTCBalanceRequest(newResp.Address)
 
 		// Получаем цену BTC в USD через CoinMarketCap
-		btcPrice := getBTCPriceRequest(cfg)
+		btcPrice := GetBTCPriceRequest(cfg)
 
 		btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
 		if err != nil {
@@ -73,6 +73,7 @@ func GetBTCBalanceInUSD(chatID int64, usersList map[int64]string, cfg *config.Co
 		usdBalance := new(big.Float).Mul(btcBalance, big.NewFloat(btcPriceFloat))
 		str := fmt.Sprintf("%.2f USD", usdBalance)
 		return str
+		//telegram2.SendTgMess(ChatID, str, bot, telegram2.Second)
 	}
 	return ""
 }

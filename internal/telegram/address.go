@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/internal/entity"
 	"regexp"
 	"strings"
@@ -24,21 +25,21 @@ func IsValidBitcoinAddress(address string) bool {
 	return reBase58.MatchString(address) || reBech32.MatchString(address)
 }
 
-func PutAddToMap(chatID int64, usersList map[int64]string, usersListBTC map[int64]string, text string) {
+func PutAddToMap(ChatID int64, usersList map[int64]string, usersListBTC map[int64]string, text string, bot *tgbotapi.BotAPI) {
 	var newResp entity.CryptoUserData
 	newResp.Address = text
 	if IsValidEtAddress(newResp.Address) {
-		usersList[chatID] = newResp.Address
-		//return "ETH адрес получен. Выберете действие"
-		//SendTgMess(ChatID, str, bot, Second)
+		usersList[ChatID] = newResp.Address
+		str := "ETH адрес получен. Выберете действие"
+		SendTgMess(ChatID, str, bot, Second)
 	} else if IsValidBitcoinAddress(newResp.Address) {
-		usersListBTC[chatID] = newResp.Address
-		//return "BTC адрес получен. Выберете действие"
-		//SendTgMess(ChatID, str, bot, Second)
+		usersListBTC[ChatID] = newResp.Address
+		str := "BTC адрес получен. Выберете действие"
+		SendTgMess(ChatID, str, bot, Second)
 	} else {
 		newResp.Address = ""
-		//return "Введите правильный адрес"
-		//SendTgMess(ChatID, str, bot, First)
+		str := "Введите адрес"
+		SendTgMess(ChatID, str, bot, First)
 	}
 }
 

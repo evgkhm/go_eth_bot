@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(errors.New("can't create server"))
 	}
 
-	tgBot := telegram.New(cfg)
+	handlers := telegram.New(cfg)
 
-	tgBot.Run(cfg)
+	handlers.Run(cfg)
 }

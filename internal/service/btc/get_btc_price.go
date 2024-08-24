@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-// getBTCPriceRequest функция получения текущего курса btc
-func getBTCPriceRequest(cfg *config.Config) string {
+// GetBTCPriceRequest функция получения текущего курса btc
+func GetBTCPriceRequest(cfg *config.Config) string {
 	client := &http.Client{}
 
 	req, reqErr := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
@@ -53,7 +53,9 @@ func removeExtn(input string) string {
 
 func GetBTCPrice(cfg *config.Config) string {
 	//получаем цену
-	btcPrice := getBTCPriceRequest(cfg)
+	btcPrice := GetBTCPriceRequest(cfg)
 
-	return btcPrice + " USD"
+	str := btcPrice + " USD"
+
+	return str
 }
