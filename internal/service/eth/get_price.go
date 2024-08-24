@@ -21,20 +21,20 @@ func getEthPriceRequest(cfg *config.Config) *big.Float {
 		"&action=ethprice" +
 		"&apikey=" + dotenv)
 	if httpGetErr != nil {
-		log.Println(httpGetErr)
+		log.Fatalln(httpGetErr)
 	}
 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Println(err)
+			log.Fatalln(err)
 		}
 	}(resp.Body)
 
 	//парсинг данных
 	var cResp entity.CryptoResponsePrice
 	if err := json.NewDecoder(resp.Body).Decode(&cResp); err != nil {
-		log.Println("error while decode data from get eth price")
+		log.Fatal("error while decode data from get eth price")
 	}
 
 	ethPrice := new(big.Float)
