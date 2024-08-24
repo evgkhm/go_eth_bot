@@ -2,6 +2,16 @@ package telegram
 
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
+// Page для выбора клавиатуры ТГ
+type Page int
+
+const (
+	First Page = iota + 1
+	Second
+	Third
+	Fourth
+)
+
 // FirstKeyboard firstKeyboard первая клавиатура для отображения в ТГ
 var FirstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
@@ -11,7 +21,7 @@ var FirstKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
-// SecondKeyboard secondKeyboard вторая клавиатура для отображения в ТГ
+// SecondKeyboard secondKeyboard вторая клавиатура для отображения в ТГ, когда есть баланс ETH и BTC
 var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("🔷Баланс ETH", "/get_balance"),
@@ -31,7 +41,7 @@ var SecondKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
-// ThirdKeyboard thirdKeyboard третья клавиатура для отображения в ТГ
+// ThirdKeyboard thirdKeyboard третья клавиатура для отображения в ТГ, когда есть баланс только ETH
 var ThirdKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("🔷Баланс ETH", "/get_balance"),
@@ -47,7 +57,7 @@ var ThirdKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
-// FourthKeyboard fourthKeyboard четвертая клавиатура для отображения в ТГ
+// FourthKeyboard fourthKeyboard четвертая клавиатура для отображения в ТГ, когда есть баланс только BTC
 var FourthKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("₿ Баланс BTC", "/get_balance_btc"),

@@ -8,16 +8,6 @@ import (
 	"log"
 )
 
-// Page для выбора клавиатуры ТГ
-type Page int
-
-const (
-	First Page = iota + 1
-	Second
-	Third
-	Fourth
-)
-
 type Updates struct {
 	updates tgbotapi.UpdatesChannel
 	bot     *tgbotapi.BotAPI
@@ -46,7 +36,7 @@ func (u Updates) Run(cfg *config.Config) {
 		if update.Message != nil && update.Message.Text == "/start" {
 			Greeting(update.Message.Chat.ID, update.Message.From.FirstName, u.bot)
 		} else if update.Message != nil {
-			PutAddToMap(update.Message.Chat.ID, usersListETH, usersListBTC, update.Message.Text)
+			PutAddToMap(update.Message.Chat.ID, usersListETH, usersListBTC, update.Message.Text, u.bot)
 		}
 
 		//если получили нажатие кнопки
