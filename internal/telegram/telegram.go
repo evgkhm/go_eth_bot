@@ -3,8 +3,8 @@ package telegram
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_eth_bot/config"
-	btc2 "go_eth_bot/internal/service/btc"
-	eth2 "go_eth_bot/internal/service/eth"
+	"go_eth_bot/internal/service/btc"
+	"go_eth_bot/internal/service/eth"
 	"log"
 )
 
@@ -14,6 +14,8 @@ type Page int
 const (
 	First Page = iota + 1
 	Second
+	Third
+	Fourth
 )
 
 type Updates struct {
@@ -29,45 +31,50 @@ func (u Updates) Run(cfg *config.Config) {
 			Greeting(update.Message.Chat.ID, update.Message.From.FirstName, u.bot)
 		} else if update.Message != nil {
 			PutAddToMap(update.Message.Chat.ID, usersList, usersListBTC, update.Message.Text, u.bot)
-			//PutAddToMapBTC(update.Message.Chat.ID, usersListBTC, update.Message.Text, u.bot)
 		}
 
 		//если получили нажатие кнопки
 		if update.CallbackQuery != nil {
+			var keyboard Page
+			currEthBalance := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersList, cfg)
+			currEthUSDTBalance := eth.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersList, cfg)
+			currBtcBalance := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
+			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg)
+
+			if currEthBalance == "" && currBtcBalance == "" {
+				keyboard = First
+			} else if currEthBalance != "" && currBtcBalance != "" {
+				keyboard = Second
+			} else if currEthBalance != "" {
+				keyboard = Third
+			} else {
+				keyboard = Fourth
+			}
+
 			switch update.CallbackQuery.Data {
 			case "/get_balance":
-				eth2.GetBalance(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currEthBalance, u.bot, keyboard)
 
 			case "/get_balance_usd":
-				eth2.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currEthUSDTBalance, u.bot, keyboard)
 
 			case "/get_price":
-				eth2.GetEthPrice(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
-
-			case "/get_gas":
-				eth2.GetEthGas(update.CallbackQuery.Message.Chat.ID, usersList, cfg, u.bot)
+				currPrice := eth.GetEthPrice(cfg)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currPrice, u.bot, keyboard)
 
 			case "/change_addr":
-				ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList, u.bot)
-
-			case "/get_btc_price":
-				resp := btc2.GetBTCPrice(cfg)
+				resp := ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersList)
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, First)
 
+			case "/get_btc_price":
+				currPrice := btc.GetBTCPrice(cfg)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currPrice, u.bot, keyboard)
+
 			case "/get_balance_btc":
-				resp := btc2.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
-				if resp != "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, Second)
-				} else {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, "Некорректный адрес", u.bot, First)
-				}
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcBalance, u.bot, keyboard)
+
 			case "/get_balance_btc_usd":
-				resp := btc2.GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg)
-				if resp != "" {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, resp, u.bot, Second)
-				} else {
-					SendTgMess(update.CallbackQuery.Message.Chat.ID, "Некорректный адрес", u.bot, First)
-				}
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcUSDTBalance, u.bot, keyboard)
 			}
 		}
 	}

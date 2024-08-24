@@ -43,8 +43,7 @@ func PutAddToMap(ChatID int64, usersList map[int64]string, usersListBTC map[int6
 	}
 }
 
-func ChangeAddress(ChatID int64, usersList map[int64]string, bot *tgbotapi.BotAPI) {
+func ChangeAddress(ChatID int64, usersList map[int64]string) string {
 	delete(usersList, ChatID)
-	str := "Введите ETH или BTC адрес"
-	SendTgMess(ChatID, str, bot, First)
+	return "Введите ETH или BTC адрес"
 }

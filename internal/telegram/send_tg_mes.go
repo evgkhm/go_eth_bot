@@ -12,6 +12,10 @@ func SendTgMess(id int64, str string, bot *tgbotapi.BotAPI, page Page) {
 		msg.ReplyMarkup = FirstKeyboard
 	case Second:
 		msg.ReplyMarkup = SecondKeyboard
+	case Third:
+		msg.ReplyMarkup = ThirdKeyboard
+	case Fourth:
+		msg.ReplyMarkup = FourthKeyboard
 	}
 
 	//Отправка сообщения в ТГ
