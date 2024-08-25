@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-// getBTCBalanceRequest Получает баланс биткоин-адреса через Blockchain.com API
+// Получает баланс биткоин-адреса через Blockchain.com API
 func getBTCBalanceRequest(address string) *big.Float {
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
