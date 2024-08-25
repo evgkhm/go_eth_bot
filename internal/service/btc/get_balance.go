@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"go_eth_bot/config"
-	"go_eth_bot/internal/entity"
 	"go_eth_bot/internal/service/util"
 	"log"
 	"math/big"
@@ -18,7 +17,6 @@ func getBTCBalanceRequest(address string) *big.Float {
 		log.Println("Адрес не может быть пустым")
 		return nil
 	}
-	//log.Println("Адрес: " + address)
 
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
@@ -41,12 +39,12 @@ func getBTCBalanceRequest(address string) *big.Float {
 }
 
 func GetBTCBalance(chatID int64, usersList map[int64]string) (string, string) {
-	var newResp entity.BTCUserData
+	var address string
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
+	address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
 	if IsExistAddr {
 		// Получаем баланс биткоин-адреса
-		btcBalance := getBTCBalanceRequest(newResp.Address)
+		btcBalance := getBTCBalanceRequest(address)
 
 		btcBalanceWithName := fmt.Sprint(btcBalance, " BTC")
 		btcBalanceString := fmt.Sprint(btcBalance)
@@ -55,13 +53,13 @@ func GetBTCBalance(chatID int64, usersList map[int64]string) (string, string) {
 	return "", ""
 }
 
-func GetBTCBalanceInUSD(currBtcBalance string, cfg *config.Config) string {
-	if currBtcBalance == "" {
+func GetBTCBalanceInUSD(btcBalance string, cfg *config.Config) string {
+	if btcBalance == "" {
 		return "0 USD"
 	}
 
 	// из string во float64
-	btcBalanceFloat, err := strconv.ParseFloat(currBtcBalance, 64)
+	btcBalanceFloat, err := strconv.ParseFloat(btcBalance, 64)
 	if err != nil {
 		log.Println(err)
 		return "0 USD"

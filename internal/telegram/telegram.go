@@ -52,16 +52,17 @@ func (u Updates) Run(cfg *config.Config) {
 		//если получили нажатие кнопки
 		if update.CallbackQuery != nil {
 			var keyboard Page
-			currEthBalance := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
-			currEthUSDTBalance := eth.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
-			currBtcBalanceWithName, btcBalanceWithoutName := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
-			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(btcBalanceWithoutName, cfg)
+			ethBalance, ethBalanceWithoutName := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
+			ethUSDTBalance := eth.GetBalanceUSD(ethBalanceWithoutName, cfg)
 
-			if currEthBalance == "" && currBtcBalanceWithName == "" {
+			btcBalanceWithName, btcBalanceWithoutName := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
+			btcUSDTBalance := btc.GetBTCBalanceInUSD(btcBalanceWithoutName, cfg)
+
+			if ethBalance == "" && btcBalanceWithName == "" {
 				keyboard = First
-			} else if currEthBalance != "" && currBtcBalanceWithName != "" {
+			} else if ethBalance != "" && btcBalanceWithName != "" {
 				keyboard = Second
-			} else if currEthBalance != "" {
+			} else if ethBalance != "" {
 				keyboard = Third
 			} else {
 				keyboard = Fourth
@@ -69,10 +70,10 @@ func (u Updates) Run(cfg *config.Config) {
 
 			switch update.CallbackQuery.Data {
 			case "/get_balance":
-				SendTgMess(update.CallbackQuery.Message.Chat.ID, currEthBalance, u.bot, keyboard)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, ethBalance, u.bot, keyboard)
 
 			case "/get_balance_usd":
-				SendTgMess(update.CallbackQuery.Message.Chat.ID, currEthUSDTBalance, u.bot, keyboard)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, ethUSDTBalance, u.bot, keyboard)
 
 			case "/get_price":
 				currPrice := eth.GetEthPrice(cfg)
@@ -83,10 +84,10 @@ func (u Updates) Run(cfg *config.Config) {
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, currPrice, u.bot, keyboard)
 
 			case "/get_balance_btc":
-				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcBalanceWithName, u.bot, keyboard)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, btcBalanceWithName, u.bot, keyboard)
 
 			case "/get_balance_btc_usd":
-				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcUSDTBalance, u.bot, keyboard)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, btcUSDTBalance, u.bot, keyboard)
 
 			case "/change_addr_eth":
 				resp := ChangeAddress(update.CallbackQuery.Message.Chat.ID, usersListETH)
