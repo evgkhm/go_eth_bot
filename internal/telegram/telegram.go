@@ -23,14 +23,30 @@ type Updates struct {
 	bot     *tgbotapi.BotAPI
 }
 
+func New(cfg *config.Config) *Updates {
+	u := &Updates{}
+	// подключаемся к телеграм боту с помощью токена
+	bot, err := tgbotapi.NewBotAPI(cfg.TgApiKey)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	bot.Debug = false
+
+	u.bot = bot
+	u.updates = bot.ListenForWebhook("/" + bot.Token)
+
+	return u
+}
+
 func (u Updates) Run(cfg *config.Config) {
-	usersListETH := make(map[int64]string) //здесь список всех пользователей
+	usersListETH := make(map[int64]string) //здесь список всех пользователей ETH
 	usersListBTC := make(map[int64]string) //здесь список всех пользователей BTC
 	for update := range u.updates {
 		if update.Message != nil && update.Message.Text == "/start" {
 			Greeting(update.Message.Chat.ID, update.Message.From.FirstName, u.bot)
 		} else if update.Message != nil {
-			PutAddToMap(update.Message.Chat.ID, usersListETH, usersListBTC, update.Message.Text, u.bot)
+			PutAddToMap(update.Message.Chat.ID, usersListETH, usersListBTC, update.Message.Text)
 		}
 
 		//если получили нажатие кнопки
@@ -82,20 +98,4 @@ func (u Updates) Run(cfg *config.Config) {
 			}
 		}
 	}
-}
-
-func New(cfg *config.Config) *Updates {
-	u := &Updates{}
-	// подключаемся к телеграм боту с помощью токена
-	bot, err := tgbotapi.NewBotAPI(cfg.TgApiKey)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	bot.Debug = false
-
-	u.bot = bot
-	u.updates = bot.ListenForWebhook("/" + bot.Token)
-
-	return u
 }
