@@ -11,12 +11,12 @@ import (
 func main() {
 	cfg, errConfig := config.New()
 	if errConfig != nil {
-		log.Fatal(errors.New("can't get config"))
+		log.Println(errors.New("can't get config"))
 	}
 
 	serverErr := server.New(cfg)
 	if serverErr != nil {
-		log.Fatal(errors.New("can't create server"))
+		log.Println(errors.New("can't create server"))
 	}
 
 	tgBot := telegram.New(cfg)

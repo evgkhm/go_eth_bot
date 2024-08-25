@@ -29,7 +29,7 @@ func getBTCPriceRequest(cfg *config.Config) string {
 	req.URL.RawQuery = q.Encode()
 	resp, httpGetErr := client.Do(req)
 	if httpGetErr != nil {
-		log.Fatalln(httpGetErr)
+		log.Println(httpGetErr)
 	}
 	defer resp.Body.Close()
 
