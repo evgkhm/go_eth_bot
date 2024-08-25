@@ -33,6 +33,9 @@ func getBTCBalanceRequest(address string) *big.Float {
 		}
 	}(resp.Body)
 
+	log.Println(resp.Body)
+	log.Println(resp.StatusCode)
+
 	// Получаем баланс в сатоши (наименьшая единица биткоина)
 	var satoshiBalance int64
 	if decodeErr := json.NewDecoder(resp.Body).Decode(&satoshiBalance); decodeErr != nil {
