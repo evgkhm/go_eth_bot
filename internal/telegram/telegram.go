@@ -54,12 +54,12 @@ func (u Updates) Run(cfg *config.Config) {
 			var keyboard Page
 			currEthBalance := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
 			currEthUSDTBalance := eth.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
-			currBtcBalance := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
-			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(currBtcBalance, cfg)
+			currBtcBalanceWithName, btcBalanceWithoutName := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
+			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(btcBalanceWithoutName, cfg)
 
-			if currEthBalance == "" && currBtcBalance == "" {
+			if currEthBalance == "" && currBtcBalanceWithName == "" {
 				keyboard = First
-			} else if currEthBalance != "" && currBtcBalance != "" {
+			} else if currEthBalance != "" && currBtcBalanceWithName != "" {
 				keyboard = Second
 			} else if currEthBalance != "" {
 				keyboard = Third
@@ -83,7 +83,7 @@ func (u Updates) Run(cfg *config.Config) {
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, currPrice, u.bot, keyboard)
 
 			case "/get_balance_btc":
-				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcBalance, u.bot, keyboard)
+				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcBalanceWithName, u.bot, keyboard)
 
 			case "/get_balance_btc_usd":
 				SendTgMess(update.CallbackQuery.Message.Chat.ID, currBtcUSDTBalance, u.bot, keyboard)
