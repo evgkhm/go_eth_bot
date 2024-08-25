@@ -11,8 +11,8 @@ import (
 	"net/http"
 )
 
-// GetEthPrice функция получения текущего курса eth
-func GetEthPriceRequest(cfg *config.Config) *big.Float {
+// getEthPriceRequest функция получения текущего курса eth
+func getEthPriceRequest(cfg *config.Config) *big.Float {
 	// godotenv package
 	dotenv := cfg.EthScanApiKey
 
@@ -45,16 +45,6 @@ func GetEthPriceRequest(cfg *config.Config) *big.Float {
 
 func GetEthPrice(cfg *config.Config) string {
 	//получаем цену эфириума
-	ethPrice := GetEthPriceRequest(cfg)
-	//str := fmt.Sprint(ethPrice, " USD")
+	ethPrice := getEthPriceRequest(cfg)
 	return fmt.Sprintf("%.0f USD", ethPrice)
-
-	//узнаем есть ли у этого ID адрес эфира в мапе
-	//var newResp entity.CryptoUserData
-	//var IsExistAddr bool
-	//newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, ChatID)
-	//if IsExistAddr {
-	//	return str
-	//}
-	//return ""
 }

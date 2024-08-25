@@ -8,8 +8,7 @@ func GetAddFromMap(usersList map[int64]string, chatID int64) (string, bool) {
 
 	_, ok := usersList[chatID]
 	if ok {
-		newResp.Address = usersList[chatID] //извлечение из мапы адрес эфира
-
+		newResp.Address = usersList[chatID] //извлечение из мапы адрес
 		return newResp.Address, true
 	}
 	return "", false

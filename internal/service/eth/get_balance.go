@@ -52,10 +52,10 @@ func getBalanceRequest(cfg *config.Config, address string) *big.Float {
 	return ethBalance
 }
 
-func GetBalance(ChatID int64, usersList map[int64]string, cfg *config.Config) string {
+func GetBalance(chatID int64, usersList map[int64]string, cfg *config.Config) string {
 	var newResp entity.CryptoUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, ChatID)
+	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
 	if IsExistAddr {
 		ethBalance := getBalanceRequest(cfg, newResp.Address)
 		return fmt.Sprint(ethBalance, " ETH")
@@ -63,14 +63,14 @@ func GetBalance(ChatID int64, usersList map[int64]string, cfg *config.Config) st
 	return ""
 }
 
-func GetBalanceUSD(ChatID int64, usersList map[int64]string, cfg *config.Config) string {
+func GetBalanceUSD(chatID int64, usersList map[int64]string, cfg *config.Config) string {
 	//узнаем есть ли у этого ID адрес эфира в мапе
 	var newResp entity.CryptoUserData
 	var IsExistAddr bool
-	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, ChatID)
+	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
 	if IsExistAddr {
 		ethBalance := getBalanceRequest(cfg, newResp.Address)
-		ethPrice := GetEthPriceRequest(cfg)
+		ethPrice := getEthPriceRequest(cfg)
 		usdBalance := new(big.Float).Mul(ethBalance, ethPrice)
 		return fmt.Sprintf("%.0f USD", usdBalance)
 	}
