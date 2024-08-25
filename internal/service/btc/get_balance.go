@@ -54,34 +54,29 @@ func GetBTCBalance(chatID int64, usersList map[int64]string) string {
 	return ""
 }
 
-func GetBTCBalanceInUSD(chatID int64, usersList map[int64]string, cfg *config.Config) string {
-	var newResp entity.BTCUserData
-	var IsExistAddr bool
-	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
-	if IsExistAddr {
-		// Получаем баланс биткоин-адреса
-		btcBalance := newResp.Address
-
-		// из string во float64
-		btcBalanceFloat, err := strconv.ParseFloat(btcBalance, 64)
-		if err != nil {
-			log.Println(err)
-			return ""
-		}
-
-		// Получаем цену BTC в USD через CoinMarketCap
-		btcPrice := getBTCPriceRequest(cfg)
-
-		btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
-		if err != nil {
-			log.Println(err)
-			return ""
-		}
-
-		// Рассчитываем баланс в USD
-		usdBalance := new(big.Float).Mul(big.NewFloat(btcBalanceFloat), big.NewFloat(btcPriceFloat))
-		str := fmt.Sprintf("%.2f USD", usdBalance)
-		return str
+func GetBTCBalanceInUSD(currBtcBalance string, cfg *config.Config) string {
+	if currBtcBalance == "" {
+		return "0 USD"
 	}
-	return ""
+
+	// из string во float64
+	btcBalanceFloat, err := strconv.ParseFloat(currBtcBalance, 64)
+	if err != nil {
+		log.Println(err)
+		return "0 USD"
+	}
+
+	// Получаем цену BTC в USD через CoinMarketCap
+	btcPrice := getBTCPriceRequest(cfg)
+
+	btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
+	if err != nil {
+		log.Println(err)
+		return "0 USD"
+	}
+
+	// Рассчитываем баланс в USD
+	usdBalance := new(big.Float).Mul(big.NewFloat(btcBalanceFloat), big.NewFloat(btcPriceFloat))
+	str := fmt.Sprintf("%.2f USD", usdBalance)
+	return str
 }

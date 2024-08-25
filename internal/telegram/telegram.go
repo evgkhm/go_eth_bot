@@ -55,7 +55,7 @@ func (u Updates) Run(cfg *config.Config) {
 			currEthBalance := eth.GetBalance(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
 			currEthUSDTBalance := eth.GetBalanceUSD(update.CallbackQuery.Message.Chat.ID, usersListETH, cfg)
 			currBtcBalance := btc.GetBTCBalance(update.CallbackQuery.Message.Chat.ID, usersListBTC)
-			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(update.CallbackQuery.Message.Chat.ID, usersListBTC, cfg)
+			currBtcUSDTBalance := btc.GetBTCBalanceInUSD(currBtcBalance, cfg)
 
 			if currEthBalance == "" && currBtcBalance == "" {
 				keyboard = First
