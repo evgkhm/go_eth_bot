@@ -15,6 +15,11 @@ import (
 
 // Получает баланс биткоин-адреса через Blockchain.com API
 func getBTCBalanceRequest(address string) *big.Float {
+	if address == "" {
+		log.Println("Адрес не может быть пустым")
+		return nil
+	}
+
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
 		log.Println(httpGetErr)
