@@ -19,7 +19,7 @@ func getBTCBalanceRequest(address string) *big.Float {
 		log.Println("Адрес не может быть пустым")
 		return nil
 	}
-	log.Println("Адрес: " + address)
+	//log.Println("Адрес: " + address)
 
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
@@ -36,7 +36,7 @@ func getBTCBalanceRequest(address string) *big.Float {
 	// Получаем баланс в сатоши (наименьшая единица биткоина)
 	var satoshiBalance int64
 	if decodeErr := json.NewDecoder(resp.Body).Decode(&satoshiBalance); decodeErr != nil {
-		log.Println("Не удалось декодировать ответ Blockchain API")
+		log.Println("Не удалось декодировать ответ Blockchain API", decodeErr)
 	}
 
 	// Конвертируем сатоши в BTC
