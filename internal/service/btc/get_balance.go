@@ -6,7 +6,6 @@ import (
 	"go_eth_bot/config"
 	"go_eth_bot/internal/entity"
 	"go_eth_bot/internal/service/util"
-	"io"
 	"log"
 	"math/big"
 	"net/http"
@@ -24,22 +23,15 @@ func getBTCBalanceRequest(address string) *big.Float {
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
 		log.Println(httpGetErr)
+		return nil
 	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(resp.Body)
-
-	log.Println(resp.Body)
-	log.Println(resp.StatusCode)
+	defer resp.Body.Close()
 
 	// Получаем баланс в сатоши (наименьшая единица биткоина)
 	var satoshiBalance int64
 	if decodeErr := json.NewDecoder(resp.Body).Decode(&satoshiBalance); decodeErr != nil {
 		log.Println("Не удалось декодировать ответ Blockchain API", decodeErr)
+		return nil
 	}
 
 	// Конвертируем сатоши в BTC
@@ -68,7 +60,14 @@ func GetBTCBalanceInUSD(chatID int64, usersList map[int64]string, cfg *config.Co
 	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
 	if IsExistAddr {
 		// Получаем баланс биткоин-адреса
-		btcBalance := getBTCBalanceRequest(newResp.Address)
+		btcBalance := newResp.Address
+
+		// из string во float64
+		btcBalanceFloat, err := strconv.ParseFloat(btcBalance, 64)
+		if err != nil {
+			log.Println(err)
+			return ""
+		}
 
 		// Получаем цену BTC в USD через CoinMarketCap
 		btcPrice := getBTCPriceRequest(cfg)
@@ -76,10 +75,11 @@ func GetBTCBalanceInUSD(chatID int64, usersList map[int64]string, cfg *config.Co
 		btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
 		if err != nil {
 			log.Println(err)
+			return ""
 		}
 
 		// Рассчитываем баланс в USD
-		usdBalance := new(big.Float).Mul(btcBalance, big.NewFloat(btcPriceFloat))
+		usdBalance := new(big.Float).Mul(big.NewFloat(btcBalanceFloat), big.NewFloat(btcPriceFloat))
 		str := fmt.Sprintf("%.2f USD", usdBalance)
 		return str
 	}
