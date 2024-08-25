@@ -40,7 +40,7 @@ func getBTCBalanceRequest(address string) *big.Float {
 	return btcBalance
 }
 
-func GetBTCBalance(chatID int64, usersList map[int64]string) string {
+func GetBTCBalance(chatID int64, usersList map[int64]string) (string, string) {
 	var newResp entity.BTCUserData
 	var IsExistAddr bool
 	newResp.Address, IsExistAddr = util.GetAddFromMap(usersList, chatID)
@@ -48,10 +48,11 @@ func GetBTCBalance(chatID int64, usersList map[int64]string) string {
 		// Получаем баланс биткоин-адреса
 		btcBalance := getBTCBalanceRequest(newResp.Address)
 
-		str := fmt.Sprint(btcBalance, " BTC")
-		return str
+		btcBalanceWithName := fmt.Sprint(btcBalance, " BTC")
+		btcBalanceString := fmt.Sprint(btcBalance)
+		return btcBalanceWithName, btcBalanceString
 	}
-	return ""
+	return "", ""
 }
 
 func GetBTCBalanceInUSD(currBtcBalance string, cfg *config.Config) string {
