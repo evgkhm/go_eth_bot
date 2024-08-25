@@ -2,7 +2,7 @@ package util
 
 import "go_eth_bot/internal/entity"
 
-// GetAddFromMap извлечение из map файла адреса
+// извлечение из map файла адреса
 func GetAddFromMap(usersList map[int64]string, chatID int64) (string, bool) {
 	var newResp entity.CryptoUserData
 

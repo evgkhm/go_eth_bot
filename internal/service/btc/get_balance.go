@@ -19,6 +19,7 @@ func getBTCBalanceRequest(address string) *big.Float {
 		log.Println("Адрес не может быть пустым")
 		return nil
 	}
+	log.Println("Адрес: " + address)
 
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
