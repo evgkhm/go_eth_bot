@@ -26,20 +26,20 @@ func getBalanceRequest(cfg *config.Config, address string) *big.Float {
 		"&tag=latest" +
 		"&apikey=" + dotenv)
 	if httpGetErr != nil {
-		log.Fatalln(httpGetErr)
+		log.Println(httpGetErr)
 	}
 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 	}(resp.Body)
 
 	//парсинг данных, из запроса получаем WEI
 	var cResp entity.CryptoUserData
 	if decodeJsonErr := json.NewDecoder(resp.Body).Decode(&cResp); decodeJsonErr != nil {
-		log.Fatal("ooopsss! an error occurred, please try again")
+		log.Println("ooopsss! an error occurred, please try again")
 	}
 	wei := new(big.Float)
 	wei.SetString(cResp.Result)

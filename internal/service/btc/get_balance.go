@@ -17,20 +17,20 @@ import (
 func getBTCBalanceRequest(address string) *big.Float {
 	resp, httpGetErr := http.Get("https://blockchain.info/q/addressbalance/" + address)
 	if httpGetErr != nil {
-		log.Fatalln(httpGetErr)
+		log.Println(httpGetErr)
 	}
 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 	}(resp.Body)
 
 	// Получаем баланс в сатоши (наименьшая единица биткоина)
 	var satoshiBalance int64
 	if decodeErr := json.NewDecoder(resp.Body).Decode(&satoshiBalance); decodeErr != nil {
-		log.Fatal("Не удалось декодировать ответ Blockchain API")
+		log.Println("Не удалось декодировать ответ Blockchain API")
 	}
 
 	// Конвертируем сатоши в BTC
@@ -66,7 +66,7 @@ func GetBTCBalanceInUSD(chatID int64, usersList map[int64]string, cfg *config.Co
 
 		btcPriceFloat, err := strconv.ParseFloat(btcPrice, 64)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		// Рассчитываем баланс в USD
